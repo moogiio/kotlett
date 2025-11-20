@@ -1,0 +1,473 @@
+---
+---
+
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content={Astro.generator} />
+    <title>Kotlett Ipsum - Svenska Fyllnadstexter</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Oswald', sans-serif;
+            background: #2a1810;
+            background-image:
+                repeating-linear-gradient(90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0,0,0,0.1) 2px,
+                    rgba(0,0,0,0.1) 4px),
+                linear-gradient(180deg, #3d2517 0%, #2a1810 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: #f5f1e8;
+            background-image:
+                repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 40px,
+                    rgba(139, 90, 43, 0.03) 40px,
+                    rgba(139, 90, 43, 0.03) 80px);
+            border: 8px solid #8b5a2b;
+            box-shadow:
+                0 0 0 4px #f5f1e8,
+                0 0 0 8px #d4a574,
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                inset 0 2px 4px rgba(139, 90, 43, 0.1);
+            padding: 3rem;
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            right: 1rem;
+            height: 3px;
+            background: repeating-linear-gradient(90deg,
+                #8b5a2b 0px,
+                #8b5a2b 10px,
+                transparent 10px,
+                transparent 20px);
+        }
+
+        h1 {
+            color: #8b2e0b;
+            margin-bottom: 0.5rem;
+            font-size: 4rem;
+            text-align: center;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow:
+                3px 3px 0px rgba(139, 46, 11, 0.2),
+                -1px -1px 0px rgba(255, 255, 255, 0.5);
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        h1::after {
+            content: '✂';
+            position: absolute;
+            right: 10%;
+            top: -10px;
+            font-size: 2rem;
+            transform: rotate(45deg);
+            opacity: 0.3;
+        }
+
+        h1::before {
+            content: '✂';
+            position: absolute;
+            left: 10%;
+            top: -10px;
+            font-size: 2rem;
+            transform: rotate(-45deg) scaleX(-1);
+            opacity: 0.3;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #5d3a1a;
+            margin-bottom: 2.5rem;
+            font-size: 1.2rem;
+            font-weight: 400;
+            font-style: italic;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #8b5a2b;
+            padding-bottom: 1.5rem;
+            margin-left: 2rem;
+            margin-right: 2rem;
+        }
+
+        .controls {
+            margin-bottom: 2rem;
+            background: rgba(139, 90, 43, 0.08);
+            padding: 2rem;
+            border: 3px dashed #8b5a2b;
+            border-radius: 4px;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: #5d3a1a;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 12px;
+            border-radius: 2px;
+            background: #d4a574;
+            outline: none;
+            -webkit-appearance: none;
+            border: 2px solid #8b5a2b;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 2px;
+            background: #8b2e0b;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 3px solid #f5f1e8;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #a83b14;
+            transform: scale(1.1);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 2px;
+            background: #8b2e0b;
+            cursor: pointer;
+            border: 3px solid #f5f1e8;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            background: #a83b14;
+            transform: scale(1.1);
+        }
+
+        .value-display {
+            min-width: 60px;
+            text-align: center;
+            font-weight: 700;
+            color: #8b2e0b;
+            font-size: 1.5rem;
+            background: #f5f1e8;
+            padding: 0.25rem 0.75rem;
+            border: 2px solid #8b5a2b;
+            border-radius: 2px;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 2px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 350px;
+            padding: 1.5rem;
+            border: 4px solid #8b5a2b;
+            border-radius: 2px;
+            font-size: 1.05rem;
+            line-height: 1.9;
+            resize: vertical;
+            font-family: Georgia, 'Times New Roman', serif;
+            color: #2a1810;
+            transition: border-color 0.3s;
+            background: #fffef9;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #8b2e0b;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1),
+                        0 0 0 3px rgba(139, 46, 11, 0.2);
+        }
+
+        .copy-btn {
+            margin-top: 1.5rem;
+            width: 100%;
+            padding: 1.2rem;
+            background: #8b2e0b;
+            color: #f5f1e8;
+            border: 4px solid #5d1f08;
+            border-radius: 2px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-family: 'Bebas Neue', sans-serif;
+            box-shadow: 0 4px 0 #5d1f08,
+                        0 6px 12px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .copy-btn:hover {
+            background: #a83b14;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #5d1f08,
+                        0 8px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .copy-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #5d1f08,
+                        0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .copy-btn.copied {
+            background: #2d5016;
+            border-color: #1a3009;
+            box-shadow: 0 4px 0 #1a3009,
+                        0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+                letter-spacing: 2px;
+            }
+
+            h1::before,
+            h1::after {
+                font-size: 1.5rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+            body {
+                padding: 1rem;
+            }
+
+            .controls {
+                padding: 1.5rem;
+            }
+
+            label {
+                font-size: 0.95rem;
+                letter-spacing: 1px;
+            }
+
+            .value-display {
+                min-width: 50px;
+                font-size: 1.3rem;
+            }
+
+            .copy-btn {
+                font-size: 1.1rem;
+                letter-spacing: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🥩 Kotlett Ipsum</h1>
+        <p class="subtitle">Svenska fyllnadstexter om den bästa köttsorten</p>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="sentences">Antal meningar per stycke</label>
+                <div class="slider-container">
+                    <input type="range" id="sentences" min="3" max="10" value="5">
+                    <span class="value-display" id="sentencesValue">5</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="paragraphs">Antal stycken</label>
+                <div class="slider-container">
+                    <input type="range" id="paragraphs" min="1" max="10" value="3">
+                    <span class="value-display" id="paragraphsValue">3</span>
+                </div>
+            </div>
+        </div>
+
+        <textarea id="output" readonly></textarea>
+        <button class="copy-btn" id="copyBtn">Kopiera till urklipp</button>
+    </div>
+
+    <script>
+        // Swedish meat and cooking vocabulary
+        const words = [
+            'kotlett', 'fläskkarré', 'revbensspjäll', 'entrecôte', 'oxfilé', 'fläskfilé',
+            'korv', 'falukorv', 'grillkorv', 'prinskorv', 'isterband', 'medwurst',
+            'köttfärs', 'bacon', 'skinka', 'lufttorkad skinka', 'rökt skinka',
+            'fläskkött', 'nötkött', 'kalvkött', 'lamm', 'älgkött', 'renkött',
+            'fläsklägg', 'rökt sidfläsk', 'kassler', 'schnitzel', 'biff', 'hamburgare',
+            'grillad', 'stekt', 'kokt', 'rökt', 'marinerad', 'kryddad',
+            'saftig', 'mör', 'smakrik', 'välstekt', 'läcker', 'gyllenbrun',
+            'senap', 'pepparrot', 'pressad gurka', 'rödkål', 'gräddsås', 'bearnaisesås',
+            'potatismos', 'rostad lök', 'vitlök', 'timjan', 'rosmarin', 'peppar',
+            'havet salt', 'kryddsmör', 'grillkrydda', 'soja', 'honung', 'BBQ-sås',
+            'panna', 'ugn', 'grill', 'stekpanna', 'gryta', 'långkok',
+            'medelstekt', 'välstekt', 'blodig', 'rosa', 'genomstekt', 'lättstekt',
+            'strimlad', 'tärnad', 'skivad', 'hackad', 'delad', 'fileerad',
+            'frasig', 'krispig', 'gyllene', 'smarrig', 'mustigt', 'fylligt',
+            'rostbiff', 'köttbullar', 'frikadeller', 'pyttipanna', 'wallenbergare', 'falukorv',
+            'fläskpannkaka', 'blodpudding', 'leverpastej', 'sylta', 'rullsylta', 'pressylta'
+        ];
+
+        const starters = [
+            'Kotlett ipsum dolor amet',
+            'Kotlett mör saftig grillad',
+            'Kotlett väldoftande stekt',
+            'Kotlett gyllenbrun krispig',
+            'Kotlett mustigt kryddad',
+            'Kotlett läcker marinerad',
+            'Kotlett smakrik genomstekt'
+        ];
+
+        function getRandomWord() {
+            return words[Math.floor(Math.random() * words.length)];
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function generateSentence(isFirst = false) {
+            const wordCount = Math.floor(Math.random() * 8) + 8; // 8-15 words
+            let sentence = [];
+
+            if (isFirst) {
+                sentence.push(starters[Math.floor(Math.random() * starters.length)]);
+            } else {
+                sentence.push(capitalize(getRandomWord()));
+            }
+
+            for (let i = 0; i < wordCount - (isFirst ? starters[0].split(' ').length : 1); i++) {
+                sentence.push(getRandomWord());
+            }
+
+            return sentence.join(' ') + '.';
+        }
+
+        function generateParagraph(sentenceCount, isFirstParagraph = false) {
+            const sentences = [];
+            for (let i = 0; i < sentenceCount; i++) {
+                sentences.push(generateSentence(isFirstParagraph && i === 0));
+            }
+            return sentences.join(' ');
+        }
+
+        function generateText(paragraphCount, sentencesPerParagraph) {
+            const paragraphs = [];
+            for (let i = 0; i < paragraphCount; i++) {
+                paragraphs.push(generateParagraph(sentencesPerParagraph, i === 0));
+            }
+            return paragraphs.join('\n\n');
+        }
+
+        function updateText() {
+            const sentenceCount = parseInt(document.getElementById('sentences').value);
+            const paragraphCount = parseInt(document.getElementById('paragraphs').value);
+
+            const text = generateText(paragraphCount, sentenceCount);
+            document.getElementById('output').value = text;
+        }
+
+        // Event listeners for sliders
+        const sentencesSlider = document.getElementById('sentences');
+        const paragraphsSlider = document.getElementById('paragraphs');
+        const sentencesValue = document.getElementById('sentencesValue');
+        const paragraphsValue = document.getElementById('paragraphsValue');
+
+        sentencesSlider.addEventListener('input', (e) => {
+            sentencesValue.textContent = e.target.value;
+            updateText();
+        });
+
+        paragraphsSlider.addEventListener('input', (e) => {
+            paragraphsValue.textContent = e.target.value;
+            updateText();
+        });
+
+        // Copy to clipboard functionality
+        const copyBtn = document.getElementById('copyBtn');
+        copyBtn.addEventListener('click', async () => {
+            const output = document.getElementById('output');
+
+            try {
+                await navigator.clipboard.writeText(output.value);
+                copyBtn.textContent = '✓ Kopierat!';
+                copyBtn.classList.add('copied');
+
+                setTimeout(() => {
+                    copyBtn.textContent = 'Kopiera till urklipp';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                // Fallback for older browsers
+                output.select();
+                document.execCommand('copy');
+                copyBtn.textContent = '✓ Kopierat!';
+                copyBtn.classList.add('copied');
+
+                setTimeout(() => {
+                    copyBtn.textContent = 'Kopiera till urklipp';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }
+        });
+
+        // Generate initial text
+        updateText();
+    </script>
+</body>
+</html>
