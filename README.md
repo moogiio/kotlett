@@ -1,29 +1,29 @@
-# Astro Starter Kit: Minimal
+# 🥩 Kotlett Ipsum
 
-```sh
-npm create astro@latest -- --template minimal
-```
+**Svenska fyllnadstexter om den bästa köttsorten**
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+En lorem ipsum-generator med svensk köttterminologi, med fokus på kotlett och andra svenska köttdelikatesser. Perfekt för designers och utvecklare som behöver fyllnadstext med lite mer smak!
+
+## ✨ Features
+
+- 🎨 **Slaktarbutiks-tema** - Autentisk design inspirerad av traditionella svenska slaktare
+- 🇸🇪 **100% Svenska** - All text på svenska med riktig köttterminologi
+- ⚡ **Realtidsgenering** - Texten uppdateras direkt när du drar i reglagen
+- 📋 **Kopiera enkelt** - En-klicks kopiering till urklipp
+- 📱 **Responsiv** - Fungerar på alla enheter
+- 🎯 **Anpassningsbar** - Välj antal meningar och stycken
 
 ## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
 
 ```text
 /
 ├── public/
 ├── src/
 │   └── pages/
-│       └── index.astro
+│       ├── index.astro      # Huvudsida med kotlett-generatorn
+│       └── 404.astro         # 404-sida
 └── package.json
 ```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
 
 ## 🧞 Commands
 
