@@ -1,0 +1,288 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+    const recipeEntries = await getCollection('recipes');
+    return recipeEntries.map((entry: any) => ({
+        params: { slug: entry.slug },
+        props: { entry },
+    }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const recipe = entry.data;
+---
+
+<Layout title={`${recipe.name} - Kotlett.se`}>
+    <div class="recipe-detail-page">
+        <div class="recipe-detail-header">
+            <div class="recipe-detail-icon">{recipe.image}</div>
+            <h1>{recipe.name}</h1>
+            <p class="recipe-detail-subtitle">{recipe.description}</p>
+        </div>
+
+        <div class="recipe-detail-meta">
+            <div class="recipe-detail-meta-item">
+                <span class="meta-label">⏱️ Tillagningstid</span>
+                <span class="meta-value">{recipe.cookTime}</span>
+            </div>
+            <div class="recipe-detail-meta-item">
+                <span class="meta-label">👥 Portioner</span>
+                <span class="meta-value">{recipe.servings} port.</span>
+            </div>
+            <div class="recipe-detail-meta-item">
+                <span class="meta-label">📊 Svårighetsgrad</span>
+                <span class={`meta-value difficulty-badge ${recipe.difficulty}`}>{recipe.difficulty}</span>
+            </div>
+            <div class="recipe-detail-meta-item">
+                <span class="meta-label">🥩 Typ</span>
+                <span class="meta-value">{recipe.category.replace('kotlett', '')}</span>
+            </div>
+        </div>
+
+        <article class="recipe-detail-content">
+            <Content />
+        </article>
+
+        <div class="recipe-detail-actions">
+            <a href="/recept" class="back-btn">← Tillbaka till alla recept</a>
+        </div>
+    </div>
+</Layout>
+
+<style>
+    .recipe-detail-page {
+        background: #f5f1e8;
+        background-image:
+            repeating-linear-gradient(0deg,
+                transparent,
+                transparent 40px,
+                rgba(139, 90, 43, 0.03) 40px,
+                rgba(139, 90, 43, 0.03) 80px);
+        border: 8px solid #8b5a2b;
+        box-shadow:
+            0 0 0 4px #f5f1e8,
+            0 0 0 8px #d4a574,
+            0 20px 60px rgba(0, 0, 0, 0.5),
+            inset 0 2px 4px rgba(139, 90, 43, 0.1);
+        padding: 3rem;
+        max-width: 900px;
+        width: 100%;
+        position: relative;
+    }
+
+    .recipe-detail-page::before {
+        content: '';
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        right: 1rem;
+        height: 3px;
+        background: repeating-linear-gradient(90deg,
+            #8b5a2b 0px,
+            #8b5a2b 10px,
+            transparent 10px,
+            transparent 20px);
+    }
+
+    .recipe-detail-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 3px dashed #8b5a2b;
+    }
+
+    .recipe-detail-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .recipe-detail-header h1 {
+        color: #8b2e0b;
+        margin-bottom: 1rem;
+        font-size: 3rem;
+        font-family: 'Bebas Neue', sans-serif;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-shadow:
+            3px 3px 0px rgba(139, 46, 11, 0.2),
+            -1px -1px 0px rgba(255, 255, 255, 0.5);
+    }
+
+    .recipe-detail-subtitle {
+        color: #5d3a1a;
+        font-size: 1.3rem;
+        font-style: italic;
+        margin: 0;
+    }
+
+    .recipe-detail-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+        background: rgba(139, 90, 43, 0.08);
+        padding: 2rem;
+        border: 3px dashed #8b5a2b;
+        border-radius: 4px;
+    }
+
+    .recipe-detail-meta-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .meta-label {
+        color: #5d3a1a;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .meta-value {
+        color: #8b2e0b;
+        font-size: 1.3rem;
+        font-family: 'Bebas Neue', sans-serif;
+        letter-spacing: 1px;
+        text-transform: capitalize;
+    }
+
+    .recipe-detail-content {
+        color: #2a1810;
+        line-height: 1.8;
+        margin-bottom: 2rem;
+    }
+
+    .recipe-detail-content :global(h1),
+    .recipe-detail-content :global(h2) {
+        color: #8b2e0b;
+        font-family: 'Bebas Neue', sans-serif;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .recipe-detail-content :global(h1) {
+        font-size: 2.5rem;
+        border-bottom: 3px solid #8b5a2b;
+        padding-bottom: 0.5rem;
+    }
+
+    .recipe-detail-content :global(h2) {
+        font-size: 2rem;
+        border-bottom: 2px dashed #8b5a2b;
+        padding-bottom: 0.5rem;
+    }
+
+    .recipe-detail-content :global(h3) {
+        color: #5d3a1a;
+        font-size: 1.3rem;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .recipe-detail-content :global(p) {
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .recipe-detail-content :global(ul),
+    .recipe-detail-content :global(ol) {
+        margin-left: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .recipe-detail-content :global(li) {
+        margin-bottom: 0.5rem;
+        font-size: 1.05rem;
+    }
+
+    .recipe-detail-content :global(strong) {
+        color: #8b2e0b;
+        font-weight: 700;
+    }
+
+    .recipe-detail-actions {
+        padding-top: 2rem;
+        border-top: 3px dashed #8b5a2b;
+        text-align: center;
+    }
+
+    .back-btn {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: #8b2e0b;
+        color: #f5f1e8;
+        border: 4px solid #5d1f08;
+        border-radius: 2px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-family: 'Bebas Neue', sans-serif;
+        box-shadow: 0 4px 0 #5d1f08,
+                    0 6px 12px rgba(0, 0, 0, 0.3);
+        text-decoration: none;
+    }
+
+    .back-btn:hover {
+        background: #a83b14;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 0 #5d1f08,
+                    0 8px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .back-btn:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 #5d1f08,
+                    0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    @media (max-width: 600px) {
+        .recipe-detail-page {
+            padding: 1.5rem;
+        }
+
+        .recipe-detail-header h1 {
+            font-size: 2rem;
+        }
+
+        .recipe-detail-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .recipe-detail-icon {
+            font-size: 3.5rem;
+        }
+
+        .recipe-detail-meta {
+            grid-template-columns: 1fr;
+            padding: 1.5rem;
+        }
+
+        .recipe-detail-content :global(h1) {
+            font-size: 2rem;
+        }
+
+        .recipe-detail-content :global(h2) {
+            font-size: 1.5rem;
+        }
+    }
+</style>

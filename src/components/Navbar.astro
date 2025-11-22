@@ -1,0 +1,59 @@
+---
+---
+
+<nav class="navbar">
+    <div class="navbar-container">
+        <a href="/" class="navbar-logo">
+            <span class="logo-icon">🥩</span>
+            <span class="logo-text">Kotlett.se</span>
+        </a>
+
+        <button class="navbar-toggle" id="navbarToggle" aria-label="Toggle navigation">
+            <span class="hamburger-icon">🍔</span>
+        </button>
+
+        <ul class="navbar-menu" id="navbarMenu">
+            <li class="navbar-item">
+                <a href="/ipsum" class="navbar-link">Kotlett Ipsum</a>
+            </li>
+            <li class="navbar-item">
+                <a href="/kotlettfakta" class="navbar-link">Kotlettfakta</a>
+            </li>
+            <li class="navbar-item">
+                <a href="/recept" class="navbar-link">Kotlettrecept</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggle = document.getElementById('navbarToggle');
+        const menu = document.getElementById('navbarMenu');
+
+        if (toggle && menu) {
+            toggle.addEventListener('click', () => {
+                menu.classList.toggle('active');
+                toggle.classList.toggle('active');
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                const target = e.target as HTMLElement;
+                if (!target.closest('.navbar')) {
+                    menu.classList.remove('active');
+                    toggle.classList.remove('active');
+                }
+            });
+
+            // Close menu when clicking on a link
+            const links = menu.querySelectorAll('.navbar-link');
+            links.forEach(link => {
+                link.addEventListener('click', () => {
+                    menu.classList.remove('active');
+                    toggle.classList.remove('active');
+                });
+            });
+        }
+    });
+</script>

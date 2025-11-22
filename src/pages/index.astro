@@ -1,473 +1,410 @@
 ---
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="sv">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content={Astro.generator} />
-    <title>Kotlett Ipsum - Svenska Fyllnadstexter</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Oswald', sans-serif;
-            background: #2a1810;
-            background-image:
-                repeating-linear-gradient(90deg,
-                    transparent,
-                    transparent 2px,
-                    rgba(0,0,0,0.1) 2px,
-                    rgba(0,0,0,0.1) 4px),
-                linear-gradient(180deg, #3d2517 0%, #2a1810 100%);
-            min-height: 100vh;
-            padding: 2rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .container {
-            background: #f5f1e8;
-            background-image:
-                repeating-linear-gradient(0deg,
-                    transparent,
-                    transparent 40px,
-                    rgba(139, 90, 43, 0.03) 40px,
-                    rgba(139, 90, 43, 0.03) 80px);
-            border: 8px solid #8b5a2b;
-            box-shadow:
-                0 0 0 4px #f5f1e8,
-                0 0 0 8px #d4a574,
-                0 20px 60px rgba(0, 0, 0, 0.5),
-                inset 0 2px 4px rgba(139, 90, 43, 0.1);
-            padding: 3rem;
-            max-width: 900px;
-            width: 100%;
-            position: relative;
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            right: 1rem;
-            height: 3px;
-            background: repeating-linear-gradient(90deg,
-                #8b5a2b 0px,
-                #8b5a2b 10px,
-                transparent 10px,
-                transparent 20px);
-        }
-
-        h1 {
-            color: #8b2e0b;
-            margin-bottom: 0.5rem;
-            font-size: 4rem;
-            text-align: center;
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            text-shadow:
-                3px 3px 0px rgba(139, 46, 11, 0.2),
-                -1px -1px 0px rgba(255, 255, 255, 0.5);
-            position: relative;
-            padding-bottom: 1rem;
-        }
-
-        h1::after {
-            content: '✂';
-            position: absolute;
-            right: 10%;
-            top: -10px;
-            font-size: 2rem;
-            transform: rotate(45deg);
-            opacity: 0.3;
-        }
-
-        h1::before {
-            content: '✂';
-            position: absolute;
-            left: 10%;
-            top: -10px;
-            font-size: 2rem;
-            transform: rotate(-45deg) scaleX(-1);
-            opacity: 0.3;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #5d3a1a;
-            margin-bottom: 2.5rem;
-            font-size: 1.2rem;
-            font-weight: 400;
-            font-style: italic;
-            letter-spacing: 1px;
-            border-bottom: 2px solid #8b5a2b;
-            padding-bottom: 1.5rem;
-            margin-left: 2rem;
-            margin-right: 2rem;
-        }
-
-        .controls {
-            margin-bottom: 2rem;
-            background: rgba(139, 90, 43, 0.08);
-            padding: 2rem;
-            border: 3px dashed #8b5a2b;
-            border-radius: 4px;
-        }
-
-        .control-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .control-group:last-child {
-            margin-bottom: 0;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.8rem;
-            color: #5d3a1a;
-            font-weight: 700;
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .slider-container {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        input[type="range"] {
-            flex: 1;
-            height: 12px;
-            border-radius: 2px;
-            background: #d4a574;
-            outline: none;
-            -webkit-appearance: none;
-            border: 2px solid #8b5a2b;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 2px;
-            background: #8b2e0b;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 3px solid #f5f1e8;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        input[type="range"]::-webkit-slider-thumb:hover {
-            background: #a83b14;
-            transform: scale(1.1);
-        }
-
-        input[type="range"]::-moz-range-thumb {
-            width: 28px;
-            height: 28px;
-            border-radius: 2px;
-            background: #8b2e0b;
-            cursor: pointer;
-            border: 3px solid #f5f1e8;
-            transition: all 0.2s;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        input[type="range"]::-moz-range-thumb:hover {
-            background: #a83b14;
-            transform: scale(1.1);
-        }
-
-        .value-display {
-            min-width: 60px;
-            text-align: center;
-            font-weight: 700;
-            color: #8b2e0b;
-            font-size: 1.5rem;
-            background: #f5f1e8;
-            padding: 0.25rem 0.75rem;
-            border: 2px solid #8b5a2b;
-            border-radius: 2px;
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 2px;
-        }
-
-        textarea {
-            width: 100%;
-            min-height: 350px;
-            padding: 1.5rem;
-            border: 4px solid #8b5a2b;
-            border-radius: 2px;
-            font-size: 1.05rem;
-            line-height: 1.9;
-            resize: vertical;
-            font-family: Georgia, 'Times New Roman', serif;
-            color: #2a1810;
-            transition: border-color 0.3s;
-            background: #fffef9;
-            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: #8b2e0b;
-            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1),
-                        0 0 0 3px rgba(139, 46, 11, 0.2);
-        }
-
-        .copy-btn {
-            margin-top: 1.5rem;
-            width: 100%;
-            padding: 1.2rem;
-            background: #8b2e0b;
-            color: #f5f1e8;
-            border: 4px solid #5d1f08;
-            border-radius: 2px;
-            font-size: 1.3rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            font-family: 'Bebas Neue', sans-serif;
-            box-shadow: 0 4px 0 #5d1f08,
-                        0 6px 12px rgba(0, 0, 0, 0.3);
-            position: relative;
-        }
-
-        .copy-btn:hover {
-            background: #a83b14;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 0 #5d1f08,
-                        0 8px 16px rgba(0, 0, 0, 0.4);
-        }
-
-        .copy-btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #5d1f08,
-                        0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .copy-btn.copied {
-            background: #2d5016;
-            border-color: #1a3009;
-            box-shadow: 0 4px 0 #1a3009,
-                        0 6px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 1.5rem;
-            }
-
-            h1 {
-                font-size: 2.5rem;
-                letter-spacing: 2px;
-            }
-
-            h1::before,
-            h1::after {
-                font-size: 1.5rem;
-            }
-
-            .subtitle {
-                font-size: 1rem;
-                margin-left: 0;
-                margin-right: 0;
-            }
-
-            body {
-                padding: 1rem;
-            }
-
-            .controls {
-                padding: 1.5rem;
-            }
-
-            label {
-                font-size: 0.95rem;
-                letter-spacing: 1px;
-            }
-
-            .value-display {
-                min-width: 50px;
-                font-size: 1.3rem;
-            }
-
-            .copy-btn {
-                font-size: 1.1rem;
-                letter-spacing: 2px;
-            }
-        }
-    </style>
-</head>
-<body>
+<Layout title="Kotlett.se - Hem">
     <div class="container">
-        <h1>🥩 Kotlett Ipsum</h1>
-        <p class="subtitle">Svenska fyllnadstexter om den bästa köttsorten</p>
+        <section class="hero">
+            <div class="hero-icon">🥩</div>
+            <h1 class="hero-title">Välkommen till Kotlett.se</h1>
+            <p class="hero-subtitle">Där köttet möter kreativiteten</p>
+            <p class="hero-tagline">
+                Vi är inte bara en sida - vi är en <em>kött-filosofi</em>.
+                Här hittar du allt från textgeneratorer till recept, allt med en saftig touch av kotlett.
+            </p>
+        </section>
 
-        <div class="controls">
-            <div class="control-group">
-                <label for="sentences">Antal meningar per stycke</label>
-                <div class="slider-container">
-                    <input type="range" id="sentences" min="3" max="10" value="5">
-                    <span class="value-display" id="sentencesValue">5</span>
+        <section class="features">
+            <h2 class="section-title">Vad vi erbjuder</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3 class="feature-title">Kotlett Ipsum</h3>
+                    <p class="feature-description">
+                        Trött på Lorem Ipsum? Prova vår <strong>Kotlett Ipsum</strong>-generator istället!
+                        Den är så bra att du kommer vilja <em>äta upp</em> dina wireframes.
+                    </p>
+                    <p class="feature-joke">
+                        💡 <em>"Varför använda tråkig fyllnadstext när du kan ha smakrik kotlett-prosa?"</em>
+                    </p>
+                    <a href="/ipsum" class="feature-button">Generera Kotlett-text</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3 class="feature-title">Kotlett Recept</h3>
+                    <p class="feature-description">
+                        En samling recept som är så goda att du kommer <em>gråta av lycka</em>.
+                        Från klassisk kotlett till moderna interpretationer - vi har det alla!
+                    </p>
+                    <p class="feature-joke">
+                        💡 <em>"Vi tar våra kotletter på största allvar, men oss själva? Inte så mycket."</em>
+                    </p>
+                    <a href="/recept" class="feature-button">Se alla recept</a>
                 </div>
             </div>
+        </section>
 
-            <div class="control-group">
-                <label for="paragraphs">Antal stycken</label>
-                <div class="slider-container">
-                    <input type="range" id="paragraphs" min="1" max="10" value="3">
-                    <span class="value-display" id="paragraphsValue">3</span>
+        <section class="puns">
+            <h2 class="section-title">Kotlett-visdom</h2>
+            <div class="puns-grid">
+                <div class="pun-card">
+                    <p class="pun-text">"Livet är för kort för torra kotletter."</p>
+                </div>
+                <div class="pun-card">
+                    <p class="pun-text">"En dålig kotlett är som en dålig dag - ska helst undvikas."</p>
+                </div>
+                <div class="pun-card">
+                    <p class="pun-text">"Kotletten är inte bara mat, det är en livsstil."</p>
+                </div>
+                <div class="pun-card">
+                    <p class="pun-text">"Stark som en kotlett, mör som en kotlett."</p>
+                </div>
+                <div class="pun-card">
+                    <p class="pun-text">"Första regeln i Kotlett-klubben: Man pratar ALLTID om kotletter."</p>
+                </div>
+                <div class="pun-card">
+                    <p class="pun-text">"När livet ger dig citroner, gör en citronsås till kotletten."</p>
                 </div>
             </div>
-        </div>
-
-        <textarea id="output" readonly></textarea>
-        <button class="copy-btn" id="copyBtn">Kopiera till urklipp</button>
+        </section>
     </div>
+</Layout>
 
-    <script>
-        // Swedish meat and cooking vocabulary
-        const words = [
-            'kotlett', 'fläskkarré', 'revbensspjäll', 'entrecôte', 'oxfilé', 'fläskfilé',
-            'korv', 'falukorv', 'grillkorv', 'prinskorv', 'isterband', 'medwurst',
-            'köttfärs', 'bacon', 'skinka', 'lufttorkad skinka', 'rökt skinka',
-            'fläskkött', 'nötkött', 'kalvkött', 'lamm', 'älgkött', 'renkött',
-            'fläsklägg', 'rökt sidfläsk', 'kassler', 'schnitzel', 'biff', 'hamburgare',
-            'grillad', 'stekt', 'kokt', 'rökt', 'marinerad', 'kryddad',
-            'saftig', 'mör', 'smakrik', 'välstekt', 'läcker', 'gyllenbrun',
-            'senap', 'pepparrot', 'pressad gurka', 'rödkål', 'gräddsås', 'bearnaisesås',
-            'potatismos', 'rostad lök', 'vitlök', 'timjan', 'rosmarin', 'peppar',
-            'havet salt', 'kryddsmör', 'grillkrydda', 'soja', 'honung', 'BBQ-sås',
-            'panna', 'ugn', 'grill', 'stekpanna', 'gryta', 'långkok',
-            'medelstekt', 'välstekt', 'blodig', 'rosa', 'genomstekt', 'lättstekt',
-            'strimlad', 'tärnad', 'skivad', 'hackad', 'delad', 'fileerad',
-            'frasig', 'krispig', 'gyllene', 'smarrig', 'mustigt', 'fylligt',
-            'rostbiff', 'köttbullar', 'frikadeller', 'pyttipanna', 'wallenbergare', 'falukorv',
-            'fläskpannkaka', 'blodpudding', 'leverpastej', 'sylta', 'rullsylta', 'pressylta'
-        ];
+<style>
+    .hero {
+        text-align: center;
+        padding: 2rem 0;
+        margin-bottom: 3rem;
+        border-bottom: 2px solid #8b5a2b;
+    }
 
-        const starters = [
-            'Kotlett ipsum dolor amet',
-            'Kotlett mör saftig grillad',
-            'Kotlett väldoftande stekt',
-            'Kotlett gyllenbrun krispig',
-            'Kotlett mustigt kryddad',
-            'Kotlett läcker marinerad',
-            'Kotlett smakrik genomstekt'
-        ];
+    .hero-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
 
-        function getRandomWord() {
-            return words[Math.floor(Math.random() * words.length)];
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .hero-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 4rem;
+        color: #8b2e0b;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        text-shadow: 3px 3px 0px rgba(139, 46, 11, 0.2);
+    }
+
+    .hero-subtitle {
+        font-size: 1.8rem;
+        color: #5d3a1a;
+        margin-bottom: 1.5rem;
+        font-style: italic;
+    }
+
+    .hero-tagline {
+        font-size: 1.2rem;
+        color: #5d3a1a;
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.8;
+    }
+
+    .section-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 3rem;
+        color: #8b2e0b;
+        text-align: center;
+        margin-bottom: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .features {
+        margin-bottom: 4rem;
+    }
+
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .feature-card {
+        background: rgba(139, 90, 43, 0.08);
+        padding: 2.5rem;
+        border: 3px dashed #8b5a2b;
+        border-radius: 4px;
+        transition: transform 0.3s;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2rem;
+        color: #8b2e0b;
+        margin-bottom: 1rem;
+        letter-spacing: 1px;
+    }
+
+    .feature-description {
+        color: #5d3a1a;
+        line-height: 1.8;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .feature-joke {
+        color: #8b5a2b;
+        font-size: 1rem;
+        padding: 1rem;
+        background: rgba(139, 90, 43, 0.1);
+        border-left: 4px solid #8b5a2b;
+        margin-bottom: 1.5rem;
+        font-style: italic;
+    }
+
+    .feature-button {
+        display: inline-block;
+        margin-top: auto;
+        width: 100%;
+        padding: 1.2rem;
+        background: #8b2e0b;
+        color: #f5f1e8;
+        border: 4px solid #5d1f08;
+        border-radius: 2px;
+        font-size: 1.3rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        font-family: 'Bebas Neue', sans-serif;
+        box-shadow: 0 4px 0 #5d1f08,
+                    0 6px 12px rgba(0, 0, 0, 0.3);
+        position: relative;
+        text-decoration: none;
+        text-align: center;
+    }
+
+    .feature-button:hover {
+        background: #a83b14;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 0 #5d1f08,
+                    0 8px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .feature-button:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 #5d1f08,
+                    0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .feature-button.disabled {
+        background: #666;
+        border-color: #444;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .feature-button.disabled:hover {
+        transform: none;
+        background: #666;
+    }
+
+    .puns {
+        margin-bottom: 4rem;
+    }
+
+    .puns-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .pun-card {
+        background: rgba(139, 90, 43, 0.05);
+        padding: 1.5rem;
+        border: 2px dashed #8b5a2b;
+        border-radius: 4px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 120px;
+    }
+
+    .pun-text {
+        color: #5d3a1a;
+        font-size: 1.1rem;
+        font-weight: 600;
+        line-height: 1.6;
+    }
+
+    .jokes {
+        margin-bottom: 4rem;
+    }
+
+    .jokes-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .joke-card {
+        background: rgba(139, 90, 43, 0.08);
+        padding: 2rem;
+        border: 3px dashed #8b5a2b;
+        border-radius: 4px;
+    }
+
+    .joke-question {
+        color: #8b2e0b;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .joke-answer {
+        color: #5d3a1a;
+        font-size: 1.1rem;
+        font-style: italic;
+    }
+
+    .cta {
+        text-align: center;
+        padding: 3rem 2rem;
+        background: rgba(139, 90, 43, 0.08);
+        border: 3px dashed #8b5a2b;
+        border-radius: 4px;
+        margin-top: 2rem;
+    }
+
+    .cta-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 3rem;
+        color: #8b2e0b;
+        margin-bottom: 1rem;
+        letter-spacing: 2px;
+    }
+
+    .cta-text {
+        font-size: 1.3rem;
+        color: #5d3a1a;
+        margin-bottom: 2rem;
+        line-height: 1.8;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .cta-button {
+        padding: 1.2rem 2.5rem;
+        text-decoration: none;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.5rem;
+        letter-spacing: 3px;
+        border-radius: 2px;
+        transition: all 0.2s;
+        border: 4px solid;
+        font-weight: 700;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+
+    .cta-button.primary {
+        background: #8b2e0b;
+        color: #f5f1e8;
+        border-color: #5d1f08;
+        box-shadow: 0 4px 0 #5d1f08,
+                    0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .cta-button.primary:hover {
+        background: #a83b14;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 0 #5d1f08,
+                    0 8px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .cta-button.primary:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 #5d1f08,
+                    0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .cta-button.secondary {
+        background: transparent;
+        color: #8b2e0b;
+        border-color: #8b2e0b;
+        box-shadow: 0 4px 0 #8b5a2b,
+                    0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .cta-button.secondary:hover {
+        background: rgba(139, 46, 11, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 0 #8b5a2b,
+                    0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .cta-button.secondary:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 #8b5a2b,
+                    0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
         }
 
-        function capitalize(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
+        .hero-subtitle {
+            font-size: 1.3rem;
         }
 
-        function generateSentence(isFirst = false) {
-            const wordCount = Math.floor(Math.random() * 8) + 8; // 8-15 words
-            let sentence = [];
-
-            if (isFirst) {
-                sentence.push(starters[Math.floor(Math.random() * starters.length)]);
-            } else {
-                sentence.push(capitalize(getRandomWord()));
-            }
-
-            for (let i = 0; i < wordCount - (isFirst ? starters[0].split(' ').length : 1); i++) {
-                sentence.push(getRandomWord());
-            }
-
-            return sentence.join(' ') + '.';
+        .hero-tagline {
+            font-size: 1rem;
         }
 
-        function generateParagraph(sentenceCount, isFirstParagraph = false) {
-            const sentences = [];
-            for (let i = 0; i < sentenceCount; i++) {
-                sentences.push(generateSentence(isFirstParagraph && i === 0));
-            }
-            return sentences.join(' ');
+        .section-title {
+            font-size: 2rem;
         }
 
-        function generateText(paragraphCount, sentencesPerParagraph) {
-            const paragraphs = [];
-            for (let i = 0; i < paragraphCount; i++) {
-                paragraphs.push(generateParagraph(sentencesPerParagraph, i === 0));
-            }
-            return paragraphs.join('\n\n');
+        .feature-grid,
+        .puns-grid,
+        .jokes-container {
+            grid-template-columns: 1fr;
         }
 
-        function updateText() {
-            const sentenceCount = parseInt(document.getElementById('sentences').value);
-            const paragraphCount = parseInt(document.getElementById('paragraphs').value);
-
-            const text = generateText(paragraphCount, sentenceCount);
-            document.getElementById('output').value = text;
+        .cta-title {
+            font-size: 2rem;
         }
 
-        // Event listeners for sliders
-        const sentencesSlider = document.getElementById('sentences');
-        const paragraphsSlider = document.getElementById('paragraphs');
-        const sentencesValue = document.getElementById('sentencesValue');
-        const paragraphsValue = document.getElementById('paragraphsValue');
+        .cta-text {
+            font-size: 1.1rem;
+        }
 
-        sentencesSlider.addEventListener('input', (e) => {
-            sentencesValue.textContent = e.target.value;
-            updateText();
-        });
+        .cta-buttons {
+            flex-direction: column;
+        }
 
-        paragraphsSlider.addEventListener('input', (e) => {
-            paragraphsValue.textContent = e.target.value;
-            updateText();
-        });
-
-        // Copy to clipboard functionality
-        const copyBtn = document.getElementById('copyBtn');
-        copyBtn.addEventListener('click', async () => {
-            const output = document.getElementById('output');
-
-            try {
-                await navigator.clipboard.writeText(output.value);
-                copyBtn.textContent = '✓ Kopierat!';
-                copyBtn.classList.add('copied');
-
-                setTimeout(() => {
-                    copyBtn.textContent = 'Kopiera till urklipp';
-                    copyBtn.classList.remove('copied');
-                }, 2000);
-            } catch (err) {
-                // Fallback for older browsers
-                output.select();
-                document.execCommand('copy');
-                copyBtn.textContent = '✓ Kopierat!';
-                copyBtn.classList.add('copied');
-
-                setTimeout(() => {
-                    copyBtn.textContent = 'Kopiera till urklipp';
-                    copyBtn.classList.remove('copied');
-                }, 2000);
-            }
-        });
-
-        // Generate initial text
-        updateText();
-    </script>
-</body>
-</html>
+        .cta-button {
+            width: 100%;
+        }
+    }
+</style>

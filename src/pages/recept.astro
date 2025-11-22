@@ -1,0 +1,288 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const recipeEntries = await getCollection('recipes');
+const recipes = recipeEntries.map((entry: any, index: number) => ({
+    id: index + 1,
+    name: entry.data.name,
+    category: entry.data.category,
+    difficulty: entry.data.difficulty,
+    time: entry.data.time,
+    cookTime: entry.data.cookTime,
+    servings: entry.data.servings,
+    description: entry.data.description,
+    image: entry.data.image,
+    slug: entry.slug
+}));
+---
+
+<Layout title="Kotlettrecept - Kotlett.se">
+    <div class="recipe-page">
+        <div class="recipe-page-header">
+            <h1>Kotlettrecept</h1>
+            <p class="subtitle">Från fläsk till fisk - alla kotlettrecept på ett ställe</p>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="searchInput" class="search-input" placeholder="Sök recept...">
+            <button class="filter-toggle" id="filterToggle">
+                <span class="filter-text">Filter</span>
+            </button>
+        </div>
+
+        <div class="recipe-layout">
+            <aside class="filters-sidebar" id="filtersSidebar">
+                <div class="filters-header">
+                    <h2 class="filter-title">Filtrera recept</h2>
+                    <button class="filters-close" id="filtersClose">✕</button>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Typ av kotlett</label>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">Alla</button>
+                        <button class="filter-btn" data-filter="flaskkotlett">🥩 Fläskkotlett</button>
+                        <button class="filter-btn" data-filter="lammkotlett">🐑 Lammkotlett</button>
+                        <button class="filter-btn" data-filter="kalvkotlett">🐄 Kalvkotlett</button>
+                        <button class="filter-btn" data-filter="notkotlett">🥩 Nötkotlett</button>
+                        <button class="filter-btn" data-filter="viltkotlett">🐗 Viltkotlett</button>
+                        <button class="filter-btn" data-filter="fiskkotlett">🐟 Fiskkotlett</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Svårighetsgrad</label>
+                    <div class="filter-buttons">
+                        <button class="filter-btn difficulty active" data-difficulty="all">Alla</button>
+                        <button class="filter-btn difficulty" data-difficulty="enkel">Enkel</button>
+                        <button class="filter-btn difficulty" data-difficulty="medel">Medel</button>
+                        <button class="filter-btn difficulty" data-difficulty="svar">Svår</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Tillagningstid</label>
+                    <div class="filter-buttons">
+                        <button class="filter-btn time active" data-time="all">Alla</button>
+                        <button class="filter-btn time" data-time="snabb">⚡ Under 30 min</button>
+                        <button class="filter-btn time" data-time="medel">🕐 30-60 min</button>
+                        <button class="filter-btn time" data-time="lang">🕐🕐 Över 60 min</button>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="recipe-page-content">
+                <section class="recipes">
+                    <div class="recipe-count">
+                        <p><span id="recipeCount">0</span> recept hittades</p>
+                    </div>
+
+                    <div class="recipe-grid" id="recipeGrid">
+                    <!-- Recipes will be dynamically inserted here -->
+                    <div class="no-recipes">
+                        <div class="empty-icon">🥩</div>
+                        <p class="empty-message">Inga recept hittades med dessa filter.</p>
+                        <p class="empty-submessage">Prova att ändra dina filtreringsval!</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        </div>
+    </div>
+</Layout>
+
+<script is:inline define:vars={{ recipes }}>
+    // Recipe data loaded from markdown files
+
+    let activeFilters = {
+        categories: [],
+        difficulties: [],
+        times: [],
+        search: ''
+    };
+
+    function renderRecipes() {
+        const grid = document.getElementById('recipeGrid');
+        const count = document.getElementById('recipeCount');
+
+        if (!grid || !count) return;
+
+        const filtered = recipes.filter(recipe => {
+            const categoryMatch = activeFilters.categories.length === 0 || activeFilters.categories.includes(recipe.category);
+            const difficultyMatch = activeFilters.difficulties.length === 0 || activeFilters.difficulties.includes(recipe.difficulty);
+            const timeMatch = activeFilters.times.length === 0 || activeFilters.times.includes(recipe.time);
+            const searchMatch = activeFilters.search === '' ||
+                recipe.name.toLowerCase().includes(activeFilters.search.toLowerCase()) ||
+                recipe.description.toLowerCase().includes(activeFilters.search.toLowerCase());
+
+            return categoryMatch && difficultyMatch && timeMatch && searchMatch;
+        });
+
+        count.textContent = filtered.length.toString();
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `
+                <div class="no-recipes">
+                    <div class="empty-icon">🥩</div>
+                    <p class="empty-message">Inga recept hittades med dessa filter.</p>
+                    <p class="empty-submessage">Prova att ändra dina filtreringsval!</p>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = filtered.map(recipe => `
+            <div class="recipe-card">
+                <div class="recipe-header">
+                    <div class="recipe-icon">${recipe.image}</div>
+                    <h3 class="recipe-name">${recipe.name}</h3>
+                </div>
+                <p class="recipe-description">${recipe.description}</p>
+                <div class="recipe-meta">
+                    <span class="meta-item">⏱️ ${recipe.cookTime}</span>
+                    <span class="meta-item">👥 ${recipe.servings} port.</span>
+                    <span class="meta-item difficulty-badge ${recipe.difficulty}">${recipe.difficulty}</span>
+                </div>
+                <div class="recipe-actions">
+                    <a href="/recept/${recipe.slug}" class="recipe-btn">Se recept</a>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Initial render
+        renderRecipes();
+
+        // Category filters
+        const categoryBtns = document.querySelectorAll('.filter-btn[data-filter]');
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const filter = btn.dataset.filter;
+                if (filter === 'all') {
+                    // Clear all category filters
+                    activeFilters.categories = [];
+                    categoryBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                } else {
+                    // Remove 'all' button active state
+                    categoryBtns.forEach(b => {
+                        if (b.dataset.filter === 'all') b.classList.remove('active');
+                    });
+                    // Toggle this filter
+                    btn.classList.toggle('active');
+                    if (btn.classList.contains('active')) {
+                        activeFilters.categories.push(filter);
+                    } else {
+                        activeFilters.categories = activeFilters.categories.filter(f => f !== filter);
+                    }
+                    // If no filters selected, activate 'all'
+                    if (activeFilters.categories.length === 0) {
+                        categoryBtns.forEach(b => {
+                            if (b.dataset.filter === 'all') b.classList.add('active');
+                        });
+                    }
+                }
+                renderRecipes();
+            });
+        });
+
+        // Difficulty filters
+        const difficultyBtns = document.querySelectorAll('.filter-btn[data-difficulty]');
+        difficultyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const difficulty = btn.dataset.difficulty;
+                if (difficulty === 'all') {
+                    activeFilters.difficulties = [];
+                    difficultyBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                } else {
+                    difficultyBtns.forEach(b => {
+                        if (b.dataset.difficulty === 'all') b.classList.remove('active');
+                    });
+                    btn.classList.toggle('active');
+                    if (btn.classList.contains('active')) {
+                        activeFilters.difficulties.push(difficulty);
+                    } else {
+                        activeFilters.difficulties = activeFilters.difficulties.filter(d => d !== difficulty);
+                    }
+                    if (activeFilters.difficulties.length === 0) {
+                        difficultyBtns.forEach(b => {
+                            if (b.dataset.difficulty === 'all') b.classList.add('active');
+                        });
+                    }
+                }
+                renderRecipes();
+            });
+        });
+
+        // Time filters
+        const timeBtns = document.querySelectorAll('.filter-btn[data-time]');
+        timeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const time = btn.dataset.time;
+                if (time === 'all') {
+                    activeFilters.times = [];
+                    timeBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                } else {
+                    timeBtns.forEach(b => {
+                        if (b.dataset.time === 'all') b.classList.remove('active');
+                    });
+                    btn.classList.toggle('active');
+                    if (btn.classList.contains('active')) {
+                        activeFilters.times.push(time);
+                    } else {
+                        activeFilters.times = activeFilters.times.filter(t => t !== time);
+                    }
+                    if (activeFilters.times.length === 0) {
+                        timeBtns.forEach(b => {
+                            if (b.dataset.time === 'all') b.classList.add('active');
+                        });
+                    }
+                }
+                renderRecipes();
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const target = e.target;
+                if (target && 'value' in target && typeof target.value === 'string') {
+                    activeFilters.search = target.value;
+                    renderRecipes();
+                }
+            });
+        }
+
+        // Filter toggle for mobile
+        const filterToggle = document.getElementById('filterToggle');
+        const filtersSidebar = document.getElementById('filtersSidebar');
+        const filtersClose = document.getElementById('filtersClose');
+
+        if (filterToggle && filtersSidebar) {
+            filterToggle.addEventListener('click', () => {
+                filtersSidebar.classList.toggle('active');
+            });
+        }
+
+        if (filtersClose && filtersSidebar) {
+            filtersClose.addEventListener('click', () => {
+                filtersSidebar.classList.remove('active');
+            });
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            const target = e.target;
+            if (filtersSidebar && filterToggle && target instanceof Node) {
+                if (!filtersSidebar.contains(target) && !filterToggle.contains(target)) {
+                    filtersSidebar.classList.remove('active');
+                }
+            }
+        });
+    });
+</script>
