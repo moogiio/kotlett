@@ -5,9 +5,23 @@ import Footer from '../components/Footer.astro';
 
 interface Props {
     title: string;
+    description?: string;
+    image?: string;
+    type?: string;
+    canonicalURL?: string;
 }
 
-const { title } = Astro.props;
+const {
+    title,
+    description = "Kotlett.se - Din kompletta guide till kotletter. Recept, textgenerator, fakta och poesi om den ädla kotletten.",
+    image = "/og-image.jpg",
+    type = "website",
+    canonicalURL = Astro.url.pathname
+} = Astro.props;
+
+const siteURL = Astro.site?.href || 'https://kotlett.se';
+const fullURL = new URL(canonicalURL, siteURL);
+const fullImageURL = new URL(image, siteURL);
 ---
 
 <!DOCTYPE html>
@@ -16,7 +30,33 @@ const { title } = Astro.props;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content={Astro.generator} />
+
+    <!-- Primary Meta Tags -->
     <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={fullURL} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={fullURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={fullImageURL} />
+    <meta property="og:site_name" content="Kotlett.se" />
+    <meta property="og:locale" content="sv_SE" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={fullURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={fullImageURL} />
+
+    <!-- Additional SEO -->
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="Swedish" />
+    <meta name="author" content="Kotlett.se" />
 </head>
 <body>
     <Navbar />

@@ -1,15 +1,39 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Kotlett.se",
+    "description": "Din kompletta guide till kotletter - recept, textgenerator, fakta och poesi om den ädla kotletten",
+    "url": "https://kotlett.se",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://kotlett.se/recept?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+    },
+    "about": {
+        "@type": "Thing",
+        "name": "Kotlett",
+        "description": "En kotlett är en skiva kött från djurets rygg, ofta med ben"
+    }
+};
 ---
 
-<Layout title="Kotlett.se - Hem">
+<Layout
+    title="Kotlett.se - Recept, Fakta och Textgenerator om Kotletter"
+    description="Upptäck allt om kotletter! Hitta läckra kotlettrecept, intressant kotlettfakta, en unik kotlett-textgenerator och kotlettpoesi. Sveriges mest kompletta kotlettsida."
+    canonicalURL="/"
+>
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
     <div class="container">
         <section class="hero">
             <div class="hero-icon">🥩</div>
             <h1 class="hero-title">Välkommen till Kotlett.se</h1>
-            <p class="hero-subtitle">Där köttet möter kreativiteten</p>
+            <p class="hero-subtitle">Där kotletter möter kreativitet</p>
             <p class="hero-tagline">
-                Vi är inte bara en sida - vi är en <em>kött-filosofi</em>.
+                Vi är inte bara en sida - vi är en <em>kotlett-filosofi</em>.
                 Här hittar du allt från textgeneratorer till recept, allt med en saftig touch av kotlett.
             </p>
         </section>
@@ -156,7 +180,7 @@ import Layout from '../layouts/Layout.astro';
 
     .feature-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr));
         gap: 2rem;
         margin-bottom: 3rem;
     }
@@ -415,6 +439,29 @@ import Layout from '../layouts/Layout.astro';
         .puns-grid,
         .jokes-container {
             grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            padding: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.7rem;
+        }
+
+        .feature-description {
+            font-size: 1rem;
+        }
+
+        .feature-joke {
+            font-size: 0.95rem;
+            padding: 0.8rem;
+        }
+
+        .feature-button {
+            font-size: 1.1rem;
+            padding: 1rem;
         }
 
         .cta-title {

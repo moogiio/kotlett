@@ -22,6 +22,9 @@ const recipes = recipeEntries.map((entry: any, index: number) => ({
         <div class="recipe-page-header">
             <h1>Kotlettrecept</h1>
             <p class="subtitle">Från fläsk till fisk - alla kotlettrecept på ett ställe</p>
+            <button class="submit-recipe-btn" id="submitRecipeBtn">
+                Skicka in recept
+            </button>
         </div>
 
         <div class="search-bar">
@@ -70,6 +73,142 @@ const recipes = recipeEntries.map((entry: any, index: number) => ({
                         <button class="filter-btn time" data-time="lang">🕐🕐 Över 60 min</button>
                     </div>
                 </div>
+            </aside>
+
+            <aside class="recipe-submit-panel" id="recipeSubmitPanel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Skicka in ditt recept</h2>
+                    <button class="panel-close" id="panelClose">✕</button>
+                </div>
+
+                <div id="form-message-recipe" class="form-message hidden"></div>
+
+                <form
+                    name="recipe-submission"
+                    method="POST"
+                    data-netlify="true"
+                    netlify-honeypot="bot-field"
+                    class="recipe-form"
+                    id="recipeSubmitForm"
+                >
+                    <input type="hidden" name="form-name" value="recipe-submission" />
+                    <p class="hidden">
+                        <label>
+                            Don't fill this out if you're human: <input name="bot-field" />
+                        </label>
+                    </p>
+
+                    <div class="form-group">
+                        <label for="recipe-name">Receptets namn *</label>
+                        <input
+                            type="text"
+                            id="recipe-name"
+                            name="recipe-name"
+                            required
+                            placeholder="T.ex. Grillad lammkotlett med vitlök"
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipe-category">Typ av kotlett *</label>
+                        <select id="recipe-category" name="recipe-category" required>
+                            <option value="">Välj typ...</option>
+                            <option value="flaskkotlett">Fläskkotlett</option>
+                            <option value="lammkotlett">Lammkotlett</option>
+                            <option value="kalvkotlett">Kalvkotlett</option>
+                            <option value="notkotlett">Nötkotlett</option>
+                            <option value="viltkotlett">Viltkotlett</option>
+                            <option value="fiskkotlett">Fiskkotlett</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="recipe-difficulty">Svårighetsgrad *</label>
+                            <select id="recipe-difficulty" name="recipe-difficulty" required>
+                                <option value="">Välj...</option>
+                                <option value="enkel">Enkel</option>
+                                <option value="medel">Medel</option>
+                                <option value="svar">Svår</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="recipe-time">Tillagningstid *</label>
+                            <select id="recipe-time" name="recipe-time" required>
+                                <option value="">Välj...</option>
+                                <option value="snabb">Snabb (&lt;30 min)</option>
+                                <option value="medel">Medel (30-60 min)</option>
+                                <option value="lang">Lång (&gt;60 min)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipe-servings">Antal portioner *</label>
+                        <input
+                            type="number"
+                            id="recipe-servings"
+                            name="recipe-servings"
+                            required
+                            min="1"
+                            max="20"
+                            placeholder="4"
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipe-description">Kort beskrivning *</label>
+                        <textarea
+                            id="recipe-description"
+                            name="recipe-description"
+                            rows="3"
+                            required
+                            placeholder="En kort beskrivning av ditt recept..."
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipe-ingredients">Ingredienser *</label>
+                        <textarea
+                            id="recipe-ingredients"
+                            name="recipe-ingredients"
+                            rows="8"
+                            required
+                            placeholder="Lista alla ingredienser, en per rad...&#10;&#10;Exempel:&#10;4 kotletter&#10;2 msk smör&#10;Salt och peppar"
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipe-instructions">Instruktioner *</label>
+                        <textarea
+                            id="recipe-instructions"
+                            name="recipe-instructions"
+                            rows="10"
+                            required
+                            placeholder="Beskriv steg-för-steg hur man lagar rätten..."
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipe-submitter-name">Ditt namn *</label>
+                        <input
+                            type="text"
+                            id="recipe-submitter-name"
+                            name="submitter-name"
+                            required
+                            placeholder="Ditt namn"
+                        />
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        Skicka in recept
+                    </button>
+
+                    <p class="form-note">
+                        * = Obligatoriskt fält. Vi granskar alla inskick innan publicering.
+                    </p>
+                </form>
             </aside>
 
             <div class="recipe-page-content">
@@ -284,5 +423,75 @@ const recipes = recipeEntries.map((entry: any, index: number) => ({
                 }
             }
         });
+
+        // Recipe submission panel
+        const submitRecipeBtn = document.getElementById('submitRecipeBtn');
+        const recipeSubmitPanel = document.getElementById('recipeSubmitPanel');
+        const panelClose = document.getElementById('panelClose');
+        const recipeSubmitForm = document.getElementById('recipeSubmitForm');
+        const formMessageRecipe = document.getElementById('form-message-recipe');
+
+        if (submitRecipeBtn && recipeSubmitPanel) {
+            submitRecipeBtn.addEventListener('click', () => {
+                recipeSubmitPanel.classList.add('active');
+            });
+        }
+
+        if (panelClose && recipeSubmitPanel) {
+            panelClose.addEventListener('click', () => {
+                recipeSubmitPanel.classList.remove('active');
+            });
+        }
+
+        // Close panel when clicking outside
+        document.addEventListener('click', (e) => {
+            const target = e.target;
+            if (recipeSubmitPanel && submitRecipeBtn && target instanceof Node) {
+                if (!recipeSubmitPanel.contains(target) && !submitRecipeBtn.contains(target)) {
+                    recipeSubmitPanel.classList.remove('active');
+                }
+            }
+        });
+
+        // Handle form submission
+        if (recipeSubmitForm && formMessageRecipe) {
+            recipeSubmitForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const formData = new FormData(recipeSubmitForm);
+                const submitBtn = recipeSubmitForm.querySelector('.submit-btn');
+
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Skickar...';
+                }
+
+                try {
+                    const response = await fetch('/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams(formData).toString(),
+                    });
+
+                    if (response.ok) {
+                        formMessageRecipe.textContent = '✅ Tack! Ditt recept har skickats in och kommer att granskas.';
+                        formMessageRecipe.className = 'form-message success';
+                        recipeSubmitForm.reset();
+                        formMessageRecipe.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                        throw new Error('Form submission failed');
+                    }
+                } catch (error) {
+                    formMessageRecipe.textContent = '❌ Något gick fel. Försök igen senare.';
+                    formMessageRecipe.className = 'form-message error';
+                    formMessageRecipe.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Skicka in recept';
+                    }
+                }
+            });
+        }
     });
 </script>
