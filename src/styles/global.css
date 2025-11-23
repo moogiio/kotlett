@@ -664,8 +664,7 @@ textarea:focus {
     border-radius: 4px;
     position: sticky;
     top: 2rem;
-    max-height: calc(100vh - 4rem);
-    overflow-y: auto;
+    align-self: flex-start;
 }
 
 .filters-header {
