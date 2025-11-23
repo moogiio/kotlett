@@ -715,6 +715,19 @@ textarea:focus {
     transform: translateY(-2px);
 }
 
+@media (max-width: 1024px) {
+    .submit-recipe-btn {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-top: 1.5rem;
+        display: block;
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
 .recipe-submit-panel {
     position: fixed;
     top: 0;
