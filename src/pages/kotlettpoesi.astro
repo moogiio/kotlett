@@ -69,12 +69,15 @@ const haikuPoems = allPoems.filter(poem => poem.data.type === 'haiku');
                 Har du skrivit en dikt, slam eller haiku om kotletter? Dela med dig av ditt verk till oss!
             </p>
 
+            <div id="form-message" class="form-message hidden"></div>
+
             <form
                 name="kotlettpoesi"
                 method="POST"
                 data-netlify="true"
                 netlify-honeypot="bot-field"
                 class="poetry-form"
+                id="poetry-form"
             >
                 <input type="hidden" name="form-name" value="kotlettpoesi" />
                 <p class="hidden">
@@ -153,6 +156,59 @@ const haikuPoems = allPoems.filter(poem => poem.data.type === 'haiku');
         </div>
     </div>
 </Layout>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('poetry-form') as HTMLFormElement;
+        const formMessage = document.getElementById('form-message') as HTMLDivElement;
+
+        if (form && formMessage) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+                const submitBtn = form.querySelector('.submit-btn') as HTMLButtonElement;
+
+                // Disable submit button
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Skickar...';
+                }
+
+                try {
+                    const response = await fetch('/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams(formData as any).toString(),
+                    });
+
+                    if (response.ok) {
+                        // Success
+                        formMessage.textContent = '✅ Tack! Din kotlettpoesi har skickats in och kommer att granskas.';
+                        formMessage.className = 'form-message success';
+                        form.reset();
+
+                        // Scroll to message
+                        formMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                        throw new Error('Form submission failed');
+                    }
+                } catch (error) {
+                    // Error
+                    formMessage.textContent = '❌ Något gick fel. Försök igen senare.';
+                    formMessage.className = 'form-message error';
+                    formMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } finally {
+                    // Re-enable submit button
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Skicka in min Kotlettpoesi';
+                    }
+                }
+            });
+        }
+    });
+</script>
 
 <style>
     html {
@@ -296,6 +352,34 @@ const haikuPoems = allPoems.filter(poem => poem.data.type === 'haiku');
     .submission-section .intro {
         text-align: center;
         margin-bottom: 2rem;
+    }
+
+    .form-message {
+        max-width: 700px;
+        margin: 0 auto 2rem auto;
+        padding: 1.5rem;
+        border-radius: 4px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-align: center;
+        border: 3px solid;
+        transition: all 0.3s;
+    }
+
+    .form-message.success {
+        background: rgba(76, 175, 80, 0.1);
+        border-color: #4CAF50;
+        color: #2e7d32;
+    }
+
+    .form-message.error {
+        background: rgba(244, 67, 54, 0.1);
+        border-color: #f44336;
+        color: #c62828;
+    }
+
+    .form-message.hidden {
+        display: none;
     }
 
     .poetry-form {
