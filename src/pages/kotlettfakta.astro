@@ -7,8 +7,21 @@ import Layout from '../layouts/Layout.astro';
         <h1>Vad är en kotlett?</h1>
         <p class="subtitle">En komplett guide till alla kotletttyper</p>
 
-        <section class="kotlett-section">
-            <h2>1. Fläskkotletter (Gris)</h2>
+        <nav class="quick-links">
+            <p class="quick-links-title">Hoppa till:</p>
+            <div class="quick-links-grid">
+                <a href="#flaskkotletter">Fläskkotletter</a>
+                <a href="#lammkotletter">Lammkotletter</a>
+                <a href="#kalvkotletter">Kalvkotletter</a>
+                <a href="#notkotletter">Nötkotletter</a>
+                <a href="#viltkotletter">Viltkotletter</a>
+                <a href="#fiskkotletter">Fiskkotletter</a>
+                <a href="#historia">Historien bakom kotletten</a>
+            </div>
+        </nav>
+
+        <section class="kotlett-section" id="flaskkotletter">
+            <h2>Fläskkotletter (Gris)</h2>
             <p class="intro">
                 Detta är den absolut vanligaste typen av kotlett i Sverige. Den kommer från grisens rygg och är magrare än till exempel karré.
             </p>
@@ -44,8 +57,8 @@ import Layout from '../layouts/Layout.astro';
             </div>
         </section>
 
-        <section class="kotlett-section">
-            <h2>2. Lammkotletter</h2>
+        <section class="kotlett-section" id="lammkotletter">
+            <h2>Lammkotletter</h2>
             <p class="intro">
                 Lammkotletter är mindre, mörare och anses ofta vara en delikatess. De är mycket populära att grilla.
             </p>
@@ -74,8 +87,8 @@ import Layout from '../layouts/Layout.astro';
             </div>
         </section>
 
-        <section class="kotlett-section">
-            <h2>3. Kalvkotletter</h2>
+        <section class="kotlett-section" id="kalvkotletter">
+            <h2>Kalvkotletter</h2>
             <p class="intro">
                 Kalvkött är ljusare, magrare och har en finare textur än nötkött.
             </p>
@@ -90,8 +103,8 @@ import Layout from '../layouts/Layout.astro';
             </div>
         </section>
 
-        <section class="kotlett-section">
-            <h2>4. Nötkotletter (Nötkött)</h2>
+        <section class="kotlett-section" id="notkotletter">
+            <h2>Nötkotletter (Nötkött)</h2>
             <p class="intro">
                 Inom nötkött används ordet "kotlett" sällan i Sverige, utan vi använder andra namn för samma anatomiska detalj.
             </p>
@@ -120,8 +133,8 @@ import Layout from '../layouts/Layout.astro';
             </div>
         </section>
 
-        <section class="kotlett-section">
-            <h2>5. Viltkotletter</h2>
+        <section class="kotlett-section" id="viltkotletter">
+            <h2>Viltkotletter</h2>
             <p class="intro">
                 Dessa kommer från vilda djur och har ofta en kraftigare, mer "vild" smak. De är generellt mycket magra.
             </p>
@@ -143,8 +156,8 @@ import Layout from '../layouts/Layout.astro';
             </div>
         </section>
 
-        <section class="kotlett-section">
-            <h2>6. Fiskkotletter</h2>
+        <section class="kotlett-section" id="fiskkotletter">
+            <h2>Fiskkotletter</h2>
             <p class="intro">
                 Det är värt att nämna att vi även använder termen för fisk, vilket innebär att fisken är skuren tvärs över ryggraden i tjocka skivor (istället för filéer som skärs längs med).
             </p>
@@ -166,6 +179,53 @@ import Layout from '../layouts/Layout.astro';
             </div>
         </section>
 
+        <section class="kotlett-section history-section" id="historia">
+            <h2>Historien om Kotletten</h2>
+            <p class="intro">
+                Kotletten har en spännande historia som sträcker sig över flera hundra år och kontinenter.
+            </p>
+
+            <div class="kotlett-types">
+                <div class="type-card">
+                    <h3>Namnet avslöjar ursprunget (1600-talet)</h3>
+                    <p>
+                        Ordet "kotlett" kommer från franska <em>côtelette</em>, som betyder "litet revben" (av <em>côte</em> = revben). Redan på 1600-talet var detta en klassisk rätt i det franska köket, där man serverade lammkotletter som delikatess vid kungens hov. Termen spred sig till resten av Europa via den franska matkulturen, som länge ansågs vara den finaste.
+                    </p>
+                </div>
+
+                <div class="type-card">
+                    <h3>Den stora striden: Milano vs. Wien (1800-talet)</h3>
+                    <p>
+                        Det finns en ständig debatt om vem som uppfann den panerade kalvkotletten:
+                    </p>
+                    <ul>
+                        <li><strong>Milano, Italien:</strong> Hävdar att <em>Cotoletta alla Milanese</em> (panerad kalvkotlett med ben) funnits sedan medeltiden. Detta är en stolt symbol för Milanos kökskultur.</li>
+                        <li><strong>Wien, Österrike:</strong> Påstår att <em>Wiener Schnitzel</em> är den ursprungliga versionen. Enligt legenden skulle fältmarskalk Radetzky ha fört hem receptet från Milano till Wien på 1850-talet, där det blev nationalsymbol.</li>
+                    </ul>
+                    <p>
+                        Sanning eller propaganda? Vi vet inte säkert – men båda är fantastiska rätter!
+                    </p>
+                </div>
+
+                <div class="type-card">
+                    <h3>Kotletten i Sverige: Från lyx till vardag</h3>
+                    <p>
+                        I Sverige blev fläskkotletten en symbol för folkhem och ekonomisk stabilitet. På 1800-talet var kotlett fortfarande lyx. Men när Sverige industrialiserades och köttproduktionen växte under 1900-talet blev fläskkotletten en klassisk vardagsmåltid.
+                    </p>
+                    <p>
+                        Den stekta fläskkotletten med brunsås, potatis och lingonsylt blev en ikon för svensk husmanskost – enkel, mättande och älskad av både barn och vuxna.
+                    </p>
+                </div>
+
+                <div class="type-card">
+                    <h3>Den ryska förvirringen</h3>
+                    <p>
+                        I Ryssland betyder ordet "kotlety" något helt annat – där är det inte en skiva kött med ben, utan en sorts köttfärsplatta (liknande biff à la Lindström fast utan rödbetor). Detta visar hur samma ord kan vandra mellan kulturer och få nya betydelser!
+                    </p>
+                </div>
+            </div>
+        </section>
+
         <div class="back-link">
             <a href="/" class="home-btn">Tillbaka till Startsidan</a>
         </div>
@@ -173,6 +233,11 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <style>
+    html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 100px;
+    }
+
     h1 {
         color: #8b2e0b;
         font-family: 'Bebas Neue', sans-serif;
@@ -186,13 +251,58 @@ import Layout from '../layouts/Layout.astro';
     .subtitle {
         text-align: center;
         color: #5d3a1a;
-        margin-bottom: 3rem;
+        margin-bottom: 2rem;
         font-size: 1.3rem;
         font-weight: 400;
         font-style: italic;
         letter-spacing: 1px;
         border-bottom: 2px solid #8b5a2b;
         padding-bottom: 1.5rem;
+    }
+
+    .quick-links {
+        background: rgba(139, 90, 43, 0.08);
+        border: 3px dashed #8b5a2b;
+        border-radius: 4px;
+        padding: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .quick-links-title {
+        color: #8b2e0b;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin: 0 0 1rem 0;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .quick-links-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .quick-links-grid a {
+        display: block;
+        padding: 0.75rem 1rem;
+        background: #f5f1e8;
+        color: #5d3a1a;
+        text-decoration: none;
+        border: 2px solid #8b5a2b;
+        border-radius: 2px;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.2s;
+        font-size: 1rem;
+    }
+
+    .quick-links-grid a:hover {
+        background: #8b2e0b;
+        color: #f5f1e8;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     .kotlett-section {
@@ -254,6 +364,28 @@ import Layout from '../layouts/Layout.astro';
         margin: 0;
     }
 
+    .type-card ul {
+        color: #5d3a1a;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        margin: 1rem 0;
+        padding-left: 1.5rem;
+    }
+
+    .type-card li {
+        margin-bottom: 0.75rem;
+        padding-left: 0.5rem;
+    }
+
+    .type-card li::marker {
+        color: #8b5a2b;
+    }
+
+    .type-card em {
+        color: #8b2e0b;
+        font-style: italic;
+    }
+
     .back-link {
         margin-top: 3rem;
         text-align: center;
@@ -266,6 +398,20 @@ import Layout from '../layouts/Layout.astro';
 
         .subtitle {
             font-size: 1.1rem;
+        }
+
+        .quick-links {
+            padding: 1rem;
+        }
+
+        .quick-links-grid {
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+
+        .quick-links-grid a {
+            font-size: 0.95rem;
+            padding: 0.6rem 0.8rem;
         }
 
         .kotlett-section h2 {
