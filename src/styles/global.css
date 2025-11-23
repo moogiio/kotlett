@@ -1010,6 +1010,56 @@ textarea:focus {
         padding: 1.5rem;
     }
 
+    .search-bar {
+        gap: 0.5rem;
+    }
+
+    .search-input {
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+    }
+
+    .filter-toggle {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        letter-spacing: 1px;
+        white-space: nowrap;
+    }
+
+    .filter-text {
+        display: inline;
+    }
+}
+
+@media (max-width: 510px) {
+    .search-bar {
+        gap: 0.4rem;
+    }
+
+    .search-input {
+        padding: 0.65rem 0.75rem;
+        font-size: 0.9rem;
+        min-width: 0;
+    }
+
+    .filter-toggle {
+        padding: 0.65rem 0.75rem;
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+    }
+
+    .recipe-page {
+        padding: 1rem;
+    }
+
+    .recipe-page-header h1 {
+        font-size: 2rem;
+    }
+
+    .recipe-page-header .subtitle {
+        font-size: 0.95rem;
+    }
+
     label {
         font-size: 0.95rem;
         letter-spacing: 1px;
