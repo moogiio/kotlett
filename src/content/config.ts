@@ -14,6 +14,16 @@ const recipes = defineCollection({
   }),
 });
 
+const poetry = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    type: z.enum(['haiku', 'klassisk', 'slam']),
+    author: z.string().optional(),
+  }),
+});
+
 export const collections = {
   recipes,
+  poetry,
 };

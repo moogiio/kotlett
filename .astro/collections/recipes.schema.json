@@ -1,0 +1,67 @@
+{
+  "$ref": "#/definitions/recipes",
+  "definitions": {
+    "recipes": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "flaskkotlett",
+            "lammkotlett",
+            "kalvkotlett",
+            "notkotlett",
+            "viltkotlett",
+            "fiskkotlett"
+          ]
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": [
+            "enkel",
+            "medel",
+            "svar"
+          ]
+        },
+        "time": {
+          "type": "string",
+          "enum": [
+            "snabb",
+            "medel",
+            "lang"
+          ]
+        },
+        "cookTime": {
+          "type": "string"
+        },
+        "servings": {
+          "type": "number"
+        },
+        "description": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "category",
+        "difficulty",
+        "time",
+        "cookTime",
+        "servings",
+        "description",
+        "image"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
