@@ -1,0 +1,198 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getEntry } from 'astro:content';
+
+const { slug } = Astro.params;
+
+if (!slug) {
+    return Astro.redirect('/butik');
+}
+
+const entry = await getEntry('products', slug);
+
+if (!entry) {
+    return Astro.redirect('/404');
+}
+
+const { Content } = await entry.render();
+const product = entry.data;
+const isOutOfStock = product.inventory === 0;
+---
+
+<Layout title={`${product.name} - Butik`}>
+    <div class="container">
+        <a href="/butik" class="back-link">← Tillbaka till butiken</a>
+
+        <div class="product-page">
+            <div class="product-image">
+                <img src={product.image} alt={product.name} />
+            </div>
+
+            <div class="product-info">
+                <h1>{product.name}</h1>
+                <p class="description">{product.description}</p>
+
+                <div class="product-content">
+                    <Content />
+                </div>
+
+                <div class="product-buy">
+                    <span class="price">{product.price} kr</span>
+                    {isOutOfStock ? (
+                        <button class="buy-btn" disabled>Slutsåld</button>
+                    ) : (
+                        <>
+                            <p class="stock-info">
+                                {product.inventory < 10
+                                    ? `Få kvar: ${product.inventory} st`
+                                    : 'I lager'}
+                            </p>
+                            <button class="buy-btn">Lägg i varukorg</button>
+                        </>
+                    )}
+                </div>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<style>
+    .back-link {
+        display: inline-block;
+        margin-bottom: 2rem;
+        color: #8b2e0b;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+
+    .product-page {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        margin-bottom: 3rem;
+        align-items: start;
+    }
+
+    .product-image {
+        width: 100%;
+        background: rgba(139, 90, 43, 0.05);
+        border: 2px solid #8b5a2b;
+        border-radius: 4px;
+        overflow: hidden;
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+    }
+
+    .product-info h1 {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2.5rem;
+        color: #8b2e0b;
+        margin: 0 0 1rem 0;
+    }
+
+    .description {
+        font-size: 1.1rem;
+        color: #5d3a1a;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    .product-content {
+        color: #5d3a1a;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    .product-content :global(h2) {
+        font-size: 1.3rem;
+        color: #8b2e0b;
+        margin: 1.5rem 0 0.75rem 0;
+        font-weight: 600;
+    }
+
+    .product-content :global(ul) {
+        margin-left: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .product-content :global(li) {
+        margin-bottom: 0.25rem;
+    }
+
+    .product-buy {
+        border-top: 2px solid #8b5a2b;
+        padding-top: 2rem;
+        margin-top: 2rem;
+    }
+
+    .price {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2.5rem;
+        color: #8b2e0b;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .stock-info {
+        color: #ff9800;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .buy-btn {
+        width: 100%;
+        padding: 1rem;
+        background: #8b2e0b;
+        color: #f5f1e8;
+        border: 3px solid #5d1f08;
+        border-radius: 4px;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .buy-btn:hover:not(:disabled) {
+        background: #a83b14;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(139, 46, 11, 0.4);
+    }
+
+    .buy-btn:disabled {
+        background: #6d6d6d;
+        border-color: #4a4a4a;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    @media (max-width: 768px) {
+        .product-page {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .product-info h1 {
+            font-size: 2rem;
+        }
+
+        .price {
+            font-size: 2rem;
+        }
+    }
+</style>

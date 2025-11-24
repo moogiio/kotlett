@@ -23,7 +23,20 @@ const poetry = defineCollection({
   }),
 });
 
+const products = defineCollection({
+  type: 'content',
+  schema: z.object({
+    name: z.string(),
+    price: z.number(),
+    inventory: z.number(),
+    image: z.string(),
+    description: z.string(),
+    category: z.enum(['flaskkotlett', 'lammkotlett', 'kalvkotlett', 'notkotlett', 'viltkotlett', 'fiskkotlett']),
+  }),
+});
+
 export const collections = {
   recipes,
   poetry,
+  products,
 };

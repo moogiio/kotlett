@@ -1,0 +1,119 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const products = await getCollection('products');
+---
+
+<Layout title="Butik - Kotlett.se">
+    <div class="container" style="height: 100%;">
+        <h1>Butik</h1>
+        <p class="subtitle">Handla de finaste kotletterna</p>
+
+        <div class="product-list">
+            {products.map((product) => (
+                <a href={`/butik/${product.slug}`} class="product-item">
+                    <div class="product-image">
+                        <img src={product.data.image} alt={product.data.name} />
+                        {product.data.inventory === 0 && (
+                            <span class="out-of-stock-badge">Slutsåld</span>
+                        )}
+                    </div>
+                    <div class="product-details">
+                        <h2>{product.data.name}</h2>
+                        <p class="price">{product.data.price} kr</p>
+                    </div>
+                </a>
+            ))}
+        </div>
+    </div>
+</Layout>
+
+<style>
+    .product-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .product-item {
+        display: block;
+        background: rgba(139, 90, 43, 0.05);
+        border: 2px solid #8b5a2b;
+        border-radius: 4px;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .product-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(139, 46, 11, 0.2);
+    }
+
+    .product-image {
+        position: relative;
+        width: 100%;
+        height: 200px;
+        background: rgba(139, 90, 43, 0.1);
+        overflow: hidden;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .out-of-stock-badge {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background: #d32f2f;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 3px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .product-details {
+        padding: 1rem;
+    }
+
+    .product-details h2 {
+        font-size: 1.2rem;
+        color: #5d3a1a;
+        margin: 0 0 0.5rem 0;
+        font-weight: 600;
+    }
+
+    .price {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.5rem;
+        color: #8b2e0b;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .product-list {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .product-image {
+            height: 150px;
+        }
+
+        .product-details h2 {
+            font-size: 1rem;
+        }
+
+        .price {
+            font-size: 1.2rem;
+        }
+    }
+</style>

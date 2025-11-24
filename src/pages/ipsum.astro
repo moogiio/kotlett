@@ -1,5 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { generateKotlettIpsumWithOptions } from '../services/kotlettIpsumGenerator';
+
+const initialText = generateKotlettIpsumWithOptions({ paragraphs: 3, sentences: 5 });
 ---
 
 <Layout title="Kotlett Ipsum - Svenska Fyllnadstexter">
@@ -25,8 +28,27 @@ import Layout from '../layouts/Layout.astro';
             </div>
         </div>
 
-        <textarea id="output" readonly></textarea>
+        <textarea id="output" readonly>{initialText}</textarea>
         <button class="copy-btn" id="copyBtn">Kopiera till urklipp</button>
+
+        <div class="api-info">
+            <h2>API för kotlettutvecklare</h2>
+            <p>Du kan använda vårt API för att generera kotlett ipsum programmatiskt:</p>
+
+            <div class="api-url-wrapper">
+                <code class="api-url">/api/ipsum?paragraphs=3&sentences=5&format=json</code>
+                <button class="api-copy-btn" id="apiCopyBtn" title="Kopiera API URL">📋</button>
+            </div>
+
+            <div class="api-params">
+                <h3>Parametrar:</h3>
+                <ul>
+                    <li><strong>paragraphs</strong> - Antal stycken (1-10, standard: 3)</li>
+                    <li><strong>sentences</strong> - Antal meningar per stycke (3-10, standard: 5)</li>
+                    <li><strong>format</strong> - Svarsformat: text, json eller html (standard: text)</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -81,17 +103,17 @@ import Layout from '../layouts/Layout.astro';
             'Kotlett till vardag och fest'
         ];
 
-        function getRandomWord() {
+        function getRandomWord(): string {
             return words[Math.floor(Math.random() * words.length)];
         }
 
-        function capitalize(str) {
+        function capitalize(str: string): string {
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
 
-        function generateSentence(isFirst = false) {
+        function generateSentence(isFirst: boolean = false): string {
             const wordCount = Math.floor(Math.random() * 8) + 8; // 8-15 words
-            let sentence = [];
+            let sentence: string[] = [];
 
             if (isFirst) {
                 sentence.push(starters[Math.floor(Math.random() * starters.length)]);
@@ -106,16 +128,16 @@ import Layout from '../layouts/Layout.astro';
             return sentence.join(' ') + '.';
         }
 
-        function generateParagraph(sentenceCount, isFirstParagraph = false) {
-            const sentences = [];
+        function generateParagraph(sentenceCount: number, isFirstParagraph: boolean = false): string {
+            const sentences: string[] = [];
             for (let i = 0; i < sentenceCount; i++) {
                 sentences.push(generateSentence(isFirstParagraph && i === 0));
             }
             return sentences.join(' ');
         }
 
-        function generateText(paragraphCount, sentencesPerParagraph) {
-            const paragraphs = [];
+        function generateText(paragraphCount: number, sentencesPerParagraph: number): string {
+            const paragraphs: string[] = [];
             for (let i = 0; i < paragraphCount; i++) {
                 paragraphs.push(generateParagraph(sentencesPerParagraph, i === 0));
             }
@@ -123,11 +145,17 @@ import Layout from '../layouts/Layout.astro';
         }
 
         function updateText() {
-            const sentenceCount = parseInt(document.getElementById('sentences').value);
-            const paragraphCount = parseInt(document.getElementById('paragraphs').value);
+            const sentencesEl = document.getElementById('sentences') as HTMLInputElement | null;
+            const paragraphsEl = document.getElementById('paragraphs') as HTMLInputElement | null;
+            const outputEl = document.getElementById('output') as HTMLTextAreaElement | null;
+
+            if (!sentencesEl || !paragraphsEl || !outputEl) return;
+
+            const sentenceCount = parseInt(sentencesEl.value);
+            const paragraphCount = parseInt(paragraphsEl.value);
 
             const text = generateText(paragraphCount, sentenceCount);
-            document.getElementById('output').value = text;
+            outputEl.value = text;
         }
 
         // Event listeners for sliders
@@ -136,45 +164,71 @@ import Layout from '../layouts/Layout.astro';
         const sentencesValue = document.getElementById('sentencesValue');
         const paragraphsValue = document.getElementById('paragraphsValue');
 
-        sentencesSlider.addEventListener('input', (e) => {
-            sentencesValue.textContent = e.target.value;
-            updateText();
-        });
+        if (sentencesSlider && sentencesValue) {
+            sentencesSlider.addEventListener('input', (e) => {
+                sentencesValue.textContent = (e.target as HTMLInputElement).value;
+                updateText();
+            });
+        }
 
-        paragraphsSlider.addEventListener('input', (e) => {
-            paragraphsValue.textContent = e.target.value;
-            updateText();
-        });
+        if (paragraphsSlider && paragraphsValue) {
+            paragraphsSlider.addEventListener('input', (e) => {
+                paragraphsValue.textContent = (e.target as HTMLInputElement).value;
+                updateText();
+            });
+        }
 
         // Copy to clipboard functionality
         const copyBtn = document.getElementById('copyBtn');
-        copyBtn.addEventListener('click', async () => {
-            const output = document.getElementById('output');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', async () => {
+                const output = document.getElementById('output') as HTMLTextAreaElement | null;
+                if (!output) return;
 
-            try {
-                await navigator.clipboard.writeText(output.value);
-                copyBtn.textContent = '✓ Kopierat!';
-                copyBtn.classList.add('copied');
+                try {
+                    await navigator.clipboard.writeText(output.value);
+                    copyBtn.textContent = '✓ Kopierat!';
+                    copyBtn.classList.add('copied');
 
-                setTimeout(() => {
-                    copyBtn.textContent = 'Kopiera till urklipp';
-                    copyBtn.classList.remove('copied');
-                }, 2000);
-            } catch (err) {
-                // Fallback for older browsers
-                output.select();
-                document.execCommand('copy');
-                copyBtn.textContent = '✓ Kopierat!';
-                copyBtn.classList.add('copied');
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Kopiera till urklipp';
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                } catch (err) {
+                    // Fallback for older browsers
+                    output.select();
+                    document.execCommand('copy');
+                    copyBtn.textContent = '✓ Kopierat!';
+                    copyBtn.classList.add('copied');
 
-                setTimeout(() => {
-                    copyBtn.textContent = 'Kopiera till urklipp';
-                    copyBtn.classList.remove('copied');
-                }, 2000);
-            }
-        });
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Kopiera till urklipp';
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                }
+            });
+        }
 
         // Generate initial text
         updateText();
+
+        // API URL copy functionality
+        const apiCopyBtn = document.getElementById('apiCopyBtn');
+        if (apiCopyBtn) {
+            apiCopyBtn.addEventListener('click', async () => {
+                const apiUrl = '/api/ipsum?paragraphs=3&sentences=5&format=json';
+
+                try {
+                    await navigator.clipboard.writeText(apiUrl);
+                    apiCopyBtn.textContent = '✓';
+
+                    setTimeout(() => {
+                        apiCopyBtn.textContent = '📋';
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy:', err);
+                }
+            });
+        }
     </script>
 </Layout>
