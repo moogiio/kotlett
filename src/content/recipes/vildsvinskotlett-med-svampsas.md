@@ -7,9 +7,7 @@ cookTime: "50 min"
 servings: 4
 description: "Kraftfull viltsmak med höstens svamp."
 image: "🐗"
----ildsvinskotlett med Svampsås
-
-Höstens vilt kombinerat med skogsvampar - en kraftfull smakupplevelse.
+---
 
 ## Ingredienser
 
