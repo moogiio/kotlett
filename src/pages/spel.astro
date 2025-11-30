@@ -1,0 +1,1222 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="High Steaks - Kotlett.se">
+    <div class="container">
+        <h1>High Steaks</h1>
+        <p class="subtitle">Vänd kotletterna i perfekt tid!</p>
+        <h3 class="text-center">Ibland är spel inte rättvisa</h3>
+        <div class="game-wrapper">
+            <div class="game-ui">
+                <div class="ui-top">
+                    <div class="ui-item">
+                        <span class="ui-label">Poäng</span>
+                        <span class="ui-value" id="score">0</span>
+                    </div>
+                    <div class="ui-item combo-display" id="combo-display">
+                        <span class="ui-label">Combo</span>
+                        <span class="ui-value combo-value" id="combo">0</span>
+                    </div>
+                    <div class="ui-item">
+                        <span class="ui-label">Nivå</span>
+                        <span class="ui-value" id="level">1</span>
+                    </div>
+                    <div class="ui-item">
+                        <span class="ui-label">Tid</span>
+                        <span class="ui-value" id="timer">60</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-container">
+                <canvas id="gameCanvas"></canvas>
+                <div class="game-overlay hidden" id="gameOverlay">
+                    <div class="overlay-content">
+                        <h2 id="overlayTitle">High Steaks</h2>
+                        <p id="overlayMessage">Tryck för att börja!</p>
+                        <div class="final-stats hidden" id="finalStats">
+                            <div class="stat-item">
+                                <span class="stat-label">Slutpoäng:</span>
+                                <span class="stat-value" id="finalScore">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Bästa combo:</span>
+                                <span class="stat-value" id="bestCombo">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Perfekta vänd:</span>
+                                <span class="stat-value" id="perfectFlips">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Kotletter klarade:</span>
+                                <span class="stat-value" id="cutletsCompleted">0</span>
+                            </div>
+                        </div>
+                        <div class="level-complete-stats hidden" id="levelCompleteStats">
+                            <div class="stat-item">
+                                <span class="stat-label">Nivå klarad!</span>
+                                <span class="stat-value" id="completedLevel">1</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Poäng denna nivå:</span>
+                                <span class="stat-value" id="levelScore">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Total poäng:</span>
+                                <span class="stat-value" id="totalScore">0</span>
+                            </div>
+                        </div>
+                        <button class="game-button" id="startButton">Börja spela</button>
+                        <button class="game-button secondary-button hidden" id="nextLevelButton">Nästa nivå</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-info">
+                <div class="info-item">
+                    <span class="info-label">Nuvarande streak:</span>
+                    <span class="info-value" id="streak">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">High score:</span>
+                    <span class="info-value" id="highScore">0</span>
+                </div>
+            </div>
+
+            <div class="instructions">
+                <h3>Hur man spelar</h3>
+                <ul>
+                    <li><strong>Tryck på kotletterna</strong> för att vända dem i perfekt tid</li>
+                    <li><strong>Perfekt stekyta</strong> = perfekt tillfälle att vända!</li>
+                    <li><strong>Combo-clicker</strong> för flera perfekta vänd i rad</li>
+                    <li><strong>Brända kotletter</strong> ger minuspoäng!</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<script>
+    interface Cutlet {
+        id: number;
+        x: number;
+        y: number;
+        lane: number;
+        type: 'thin' | 'thick' | 'bone-in';
+        cookState: number; // 0-100 per side
+        flipped: boolean;
+        secondSide: boolean;
+        speed: number;
+        width: number;
+        height: number;
+        perfectWindowStart: number;
+        perfectWindowEnd: number;
+        perfectWindowStart2: number;
+        perfectWindowEnd2: number;
+    }
+
+    interface Particle {
+        x: number;
+        y: number;
+        vx: number;
+        vy: number;
+        life: number;
+        maxLife: number;
+        type: 'sizzle' | 'smoke' | 'sparkle';
+        size: number;
+    }
+
+    class HighSteaksGame {
+        private canvas: HTMLCanvasElement;
+        private ctx: CanvasRenderingContext2D;
+        private cutlets: Cutlet[] = [];
+        private particles: Particle[] = [];
+        private score: number = 0;
+        private combo: number = 0;
+        private bestCombo: number = 0;
+        private streak: number = 0;
+        private perfectFlips: number = 0;
+        private level: number = 1;
+        private cutletsFlippedInLevel: number = 0;
+        private cutletsNeededForNextLevel: number = 10;
+        private levelStartScore: number = 0;
+        private canProgressToNextLevel: boolean = false;
+        private timeLeft: number = 60;
+        private gameRunning: boolean = false;
+        private nextCutletId: number = 0;
+        private lanes: number = 4;
+        private laneHeight: number = 0;
+        private grillTop: number = 0;
+        private lastSpawnTime: number = 0;
+        private spawnInterval: number = 2000;
+        private animationFrame: number = 0;
+        private lastTime: number = 0;
+        private timerInterval: number = 0;
+        private highScore: number = 0;
+
+        // Canvas dimensions
+        private canvasWidth: number = 800;
+        private canvasHeight: number = 500;
+
+        constructor(canvas: HTMLCanvasElement) {
+            this.canvas = canvas;
+            const context = canvas.getContext('2d');
+            if (!context) throw new Error('Could not get canvas context');
+            this.ctx = context;
+
+            this.setupCanvas();
+            this.loadHighScore();
+            this.bindEvents();
+            this.showStartScreen();
+        }
+
+        private setupCanvas(): void {
+            const container = this.canvas.parentElement;
+            if (!container) return;
+
+            const containerWidth = container.clientWidth;
+            const scale = Math.min(containerWidth / this.canvasWidth, 1);
+
+            this.canvas.width = this.canvasWidth;
+            this.canvas.height = this.canvasHeight;
+            this.canvas.style.width = `${this.canvasWidth * scale}px`;
+            this.canvas.style.height = `${this.canvasHeight * scale}px`;
+
+            this.laneHeight = (this.canvasHeight - this.grillTop - 40) / this.lanes;
+        }
+
+        private bindEvents(): void {
+            this.canvas.addEventListener('click', (e) => this.handleClick(e));
+            this.canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                this.handleTouch(e);
+            }, { passive: false });
+
+            const startButton = document.getElementById('startButton');
+            if (startButton) {
+                startButton.addEventListener('click', () => this.startGame());
+            }
+
+            const nextLevelButton = document.getElementById('nextLevelButton');
+            if (nextLevelButton) {
+                nextLevelButton.addEventListener('click', () => this.continueToNextLevel());
+            }
+
+            window.addEventListener('resize', () => this.setupCanvas());
+        }
+
+        private handleClick(e: MouseEvent): void {
+            if (!this.gameRunning) return;
+
+            const rect = this.canvas.getBoundingClientRect();
+            const scaleX = this.canvas.width / rect.width;
+            const scaleY = this.canvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            this.checkCutletClick(x, y);
+        }
+
+        private handleTouch(e: TouchEvent): void {
+            if (!this.gameRunning) return;
+
+            const rect = this.canvas.getBoundingClientRect();
+            const scaleX = this.canvas.width / rect.width;
+            const scaleY = this.canvas.height / rect.height;
+            const touch = e.touches[0];
+            const x = (touch.clientX - rect.left) * scaleX;
+            const y = (touch.clientY - rect.top) * scaleY;
+
+            this.checkCutletClick(x, y);
+        }
+
+        private checkCutletClick(x: number, y: number): void {
+            for (let i = this.cutlets.length - 1; i >= 0; i--) {
+                const cutlet = this.cutlets[i];
+
+                if (x >= cutlet.x && x <= cutlet.x + cutlet.width &&
+                    y >= cutlet.y && y <= cutlet.y + cutlet.height) {
+                    const shouldRemove = this.flipCutlet(cutlet);
+                    if (shouldRemove) {
+                        this.cutlets.splice(i, 1);
+                    }
+                    break;
+                }
+            }
+        }
+
+        private flipCutlet(cutlet: Cutlet): boolean {
+            if (!cutlet.secondSide && !cutlet.flipped) {
+                // First flip
+                const cookState = cutlet.cookState;
+                const isPerfect = cookState >= cutlet.perfectWindowStart &&
+                                 cookState <= cutlet.perfectWindowEnd;
+
+                if (isPerfect) {
+                    this.score += 100 * (1 + this.combo * 0.5);
+                    this.combo++;
+                    this.streak++;
+                    this.perfectFlips++;
+                    this.createSparkles(cutlet.x + cutlet.width / 2, cutlet.y + cutlet.height / 2);
+                } else if (cookState > cutlet.perfectWindowEnd) {
+                    // Burnt
+                    this.score = Math.max(0, this.score - 50);
+                    this.combo = 0;
+                    this.streak = 0;
+                } else {
+                    // Too early
+                    this.score += 25;
+                    this.combo = 0;
+                    this.streak = 0;
+                }
+
+                // Transition to second side
+                cutlet.secondSide = true;
+                cutlet.flipped = false;
+                cutlet.cookState = 0;
+
+                this.bestCombo = Math.max(this.bestCombo, this.combo);
+                this.updateUI();
+                return false; // Don't remove, continue cooking second side
+
+            } else if (cutlet.secondSide && !cutlet.flipped) {
+                // Second flip - cutlet is now complete!
+                const cookState = cutlet.cookState;
+                const isPerfect = cookState >= cutlet.perfectWindowStart2 &&
+                                 cookState <= cutlet.perfectWindowEnd2;
+
+                if (isPerfect) {
+                    this.score += 150 * (1 + this.combo * 0.5);
+                    this.combo++;
+                    this.streak++;
+                    this.perfectFlips++;
+                    this.createSparkles(cutlet.x + cutlet.width / 2, cutlet.y + cutlet.height / 2);
+                } else if (cookState > cutlet.perfectWindowEnd2) {
+                    // Burnt
+                    this.score = Math.max(0, this.score - 100);
+                    this.combo = 0;
+                    this.streak = 0;
+                } else {
+                    // Too early
+                    this.score += 50;
+                    this.combo = 0;
+                    this.streak = 0;
+                }
+
+                // Count this as a completed cutlet
+                this.cutletsFlippedInLevel++;
+                console.log(`Completed cutlet! Total: ${this.cutletsFlippedInLevel}/${this.cutletsNeededForNextLevel}`);
+
+                if (this.cutletsFlippedInLevel >= this.cutletsNeededForNextLevel) {
+                    this.canProgressToNextLevel = true;
+                    console.log('Level requirement met!');
+                }
+
+                this.bestCombo = Math.max(this.bestCombo, this.combo);
+                this.updateUI();
+                return true; // Remove cutlet from board
+            }
+
+            this.bestCombo = Math.max(this.bestCombo, this.combo);
+            this.updateUI();
+            return false;
+        }
+
+        private showLevelUpNotification(): void {
+            // Create sparkle particles at random positions
+            for (let i = 0; i < 20; i++) {
+                const x = Math.random() * this.canvasWidth;
+                const y = Math.random() * this.canvasHeight;
+                this.createSparkles(x, y);
+            }
+        }
+
+        private spawnCutlet(): void {
+            const lane = Math.floor(Math.random() * this.lanes);
+            const types: ('thin' | 'thick' | 'bone-in')[] = ['thin', 'thick', 'bone-in'];
+            const type = types[Math.floor(Math.random() * types.length)];
+
+            // Level multiplier: increases speed and cook rate
+            const levelMultiplier = 1 + (this.level - 1) * 0.1;
+
+            let speed = 0.5 * levelMultiplier;
+            let perfectWindow1 = [35, 45];
+            let perfectWindow2 = [40, 50];
+
+            // Adjust perfect windows for higher levels (faster cooking = tighter windows)
+            const windowAdjustment = Math.max(0, (this.level - 1) * 2);
+
+            switch (type) {
+                case 'thin':
+                    speed = 0.7 * levelMultiplier;
+                    perfectWindow1 = [Math.max(25, 30 - windowAdjustment), Math.max(35, 40 - windowAdjustment)];
+                    perfectWindow2 = [Math.max(30, 35 - windowAdjustment), Math.max(40, 45 - windowAdjustment)];
+                    break;
+                case 'thick':
+                    speed = 0.4 * levelMultiplier;
+                    perfectWindow1 = [Math.max(35, 45 - windowAdjustment), Math.max(45, 55 - windowAdjustment)];
+                    perfectWindow2 = [Math.max(40, 50 - windowAdjustment), Math.max(50, 60 - windowAdjustment)];
+                    break;
+                case 'bone-in':
+                    speed = 0.55 * levelMultiplier;
+                    perfectWindow1 = [Math.max(30, 40 - windowAdjustment), Math.max(40, 50 - windowAdjustment)];
+                    perfectWindow2 = [Math.max(35, 45 - windowAdjustment), Math.max(45, 55 - windowAdjustment)];
+                    break;
+            }
+
+            const cutlet: Cutlet = {
+                id: this.nextCutletId++,
+                x: 0,
+                y: this.grillTop + lane * this.laneHeight + this.laneHeight / 2 - 25,
+                lane,
+                type,
+                cookState: 0,
+                flipped: false,
+                secondSide: false,
+                speed,
+                width: type === 'bone-in' ? 70 : 60,
+                height: 50,
+                perfectWindowStart: perfectWindow1[0],
+                perfectWindowEnd: perfectWindow1[1],
+                perfectWindowStart2: perfectWindow2[0],
+                perfectWindowEnd2: perfectWindow2[1]
+            };
+
+            this.cutlets.push(cutlet);
+        }
+
+        private createSizzle(x: number, y: number): void {
+            for (let i = 0; i < 2; i++) {
+                this.particles.push({
+                    x: x + (Math.random() - 0.5) * 40,
+                    y: y + (Math.random() - 0.5) * 30,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: -0.5 - Math.random() * 0.5,
+                    life: 30,
+                    maxLife: 30,
+                    type: 'sizzle',
+                    size: 3 + Math.random() * 3
+                });
+            }
+        }
+
+        private createSmoke(x: number, y: number): void {
+            for (let i = 0; i < 3; i++) {
+                this.particles.push({
+                    x: x + (Math.random() - 0.5) * 40,
+                    y: y + (Math.random() - 0.5) * 30,
+                    vx: (Math.random() - 0.5) * 0.3,
+                    vy: -1 - Math.random() * 0.5,
+                    life: 40,
+                    maxLife: 40,
+                    type: 'smoke',
+                    size: 5 + Math.random() * 5
+                });
+            }
+        }
+
+        private createSparkles(x: number, y: number): void {
+            for (let i = 0; i < 8; i++) {
+                const angle = (Math.PI * 2 * i) / 8;
+                this.particles.push({
+                    x,
+                    y,
+                    vx: Math.cos(angle) * 2,
+                    vy: Math.sin(angle) * 2,
+                    life: 20,
+                    maxLife: 20,
+                    type: 'sparkle',
+                    size: 4
+                });
+            }
+        }
+
+        private update(deltaTime: number): void {
+            // Spawn cutlets
+            if (Date.now() - this.lastSpawnTime > this.spawnInterval) {
+                this.spawnCutlet();
+                this.lastSpawnTime = Date.now();
+
+                // Gradually increase difficulty
+                if (this.spawnInterval > 1000) {
+                    this.spawnInterval -= 10;
+                }
+            }
+
+            // Update cutlets
+            const cookRateMultiplier = 1 + (this.level - 1) * 0.1;
+            for (let i = this.cutlets.length - 1; i >= 0; i--) {
+                const cutlet = this.cutlets[i];
+                cutlet.x += cutlet.speed * (deltaTime / 16);
+
+                // Cook when not flipped
+                if (!cutlet.flipped) {
+                    cutlet.cookState += cutlet.speed * 0.15 * cookRateMultiplier * (deltaTime / 16);
+                }
+
+                // Create particles
+                if (cutlet.cookState > 60 && !cutlet.flipped) {
+                    if (Math.random() < 0.1) {
+                        this.createSmoke(cutlet.x + cutlet.width / 2, cutlet.y + cutlet.height / 2);
+                    }
+                } else if (cutlet.cookState > 20 && !cutlet.flipped) {
+                    if (Math.random() < 0.05) {
+                        this.createSizzle(cutlet.x + cutlet.width / 2, cutlet.y + cutlet.height / 2);
+                    }
+                }
+
+                // Remove if off screen or burnt
+                if (cutlet.x > this.canvasWidth || cutlet.cookState > 100) {
+                    if (cutlet.cookState > 100) {
+                        // Burnt - penalty
+                        this.score = Math.max(0, this.score - 100);
+                        this.combo = 0;
+                        this.streak = 0;
+                        console.log('Cutlet burnt!');
+                    }
+                    // Just remove the cutlet (completed ones are already counted when flipped)
+                    this.cutlets.splice(i, 1);
+                }
+            }
+
+            // Update particles
+            for (let i = this.particles.length - 1; i >= 0; i--) {
+                const particle = this.particles[i];
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.life--;
+
+                if (particle.life <= 0) {
+                    this.particles.splice(i, 1);
+                }
+            }
+
+            this.updateUI();
+        }
+
+        private draw(): void {
+            // Clear canvas
+            this.ctx.fillStyle = '#f5f1e8';
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+            // Draw grill background
+            this.ctx.fillStyle = '#3a3a3a';
+            this.ctx.fillRect(0, this.grillTop, this.canvas.width, this.canvas.height - this.grillTop);
+
+            // Draw grill lines
+            this.ctx.strokeStyle = '#555';
+            this.ctx.lineWidth = 3;
+            for (let i = 0; i <= this.lanes; i++) {
+                const y = this.grillTop + i * this.laneHeight;
+                this.ctx.beginPath();
+                this.ctx.moveTo(0, y);
+                this.ctx.lineTo(this.canvas.width, y);
+                this.ctx.stroke();
+            }
+
+            // Draw vertical grill lines
+            for (let i = 0; i < 20; i++) {
+                const x = (this.canvas.width / 20) * i;
+                this.ctx.beginPath();
+                this.ctx.moveTo(x, this.grillTop);
+                this.ctx.lineTo(x, this.canvas.height);
+                this.ctx.stroke();
+            }
+
+            // Draw particles
+            for (const particle of this.particles) {
+                const alpha = particle.life / particle.maxLife;
+
+                if (particle.type === 'sizzle') {
+                    this.ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.6})`;
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                } else if (particle.type === 'smoke') {
+                    this.ctx.fillStyle = `rgba(80, 80, 80, ${alpha * 0.4})`;
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                } else if (particle.type === 'sparkle') {
+                    this.ctx.fillStyle = `rgba(255, 215, 0, ${alpha})`;
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+            }
+
+            // Draw cutlets
+            for (const cutlet of this.cutlets) {
+                const cookState = cutlet.cookState;
+                let color = '#ffb3ba'; // Raw pink
+
+                if (!cutlet.secondSide) {
+                    // First side
+                    if (cookState >= cutlet.perfectWindowStart && cookState <= cutlet.perfectWindowEnd) {
+                        color = '#d4a574'; // Perfect golden
+                    } else if (cookState > cutlet.perfectWindowEnd && cookState <= 70) {
+                        color = '#b8935e'; // Getting darker
+                    } else if (cookState > 70) {
+                        color = '#4a3520'; // Burnt
+                    } else if (cookState > 20) {
+                        color = '#f5d0a9'; // Cooking
+                    }
+                } else {
+                    // Second side
+                    if (cookState >= cutlet.perfectWindowStart2 && cookState <= cutlet.perfectWindowEnd2) {
+                        color = '#d4a574'; // Perfect golden
+                    } else if (cookState > cutlet.perfectWindowEnd2 && cookState <= 70) {
+                        color = '#b8935e'; // Getting darker
+                    } else if (cookState > 70) {
+                        color = '#4a3520'; // Burnt
+                    } else if (cookState > 20) {
+                        color = '#f5d0a9'; // Cooking
+                    }
+                }
+
+                // Draw cutlet shadow
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                this.ctx.fillRect(cutlet.x + 2, cutlet.y + 2, cutlet.width, cutlet.height);
+
+                // Draw cutlet
+                this.ctx.fillStyle = color;
+                this.ctx.beginPath();
+                this.ctx.roundRect(cutlet.x, cutlet.y, cutlet.width, cutlet.height, 8);
+                this.ctx.fill();
+
+                // Draw bone for bone-in cutlet
+                if (cutlet.type === 'bone-in') {
+                    this.ctx.fillStyle = '#f5f5dc';
+                    this.ctx.fillRect(cutlet.x + cutlet.width - 15, cutlet.y + 5, 8, cutlet.height - 10);
+                }
+
+                // Draw grill marks
+                this.ctx.strokeStyle = 'rgba(139, 69, 19, 0.6)';
+                this.ctx.lineWidth = 2;
+                for (let i = 0; i < 3; i++) {
+                    const markY = cutlet.y + (cutlet.height / 4) * (i + 1);
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(cutlet.x + 5, markY);
+                    this.ctx.lineTo(cutlet.x + cutlet.width - 5, markY);
+                    this.ctx.stroke();
+                }
+
+                // Draw perfect window glow
+                const isPerfect = (!cutlet.secondSide &&
+                                  cookState >= cutlet.perfectWindowStart &&
+                                  cookState <= cutlet.perfectWindowEnd) ||
+                                 (cutlet.secondSide &&
+                                  cookState >= cutlet.perfectWindowStart2 &&
+                                  cookState <= cutlet.perfectWindowEnd2);
+
+                if (isPerfect && !cutlet.flipped) {
+                    const pulse = Math.sin(Date.now() / 200) * 0.3 + 0.7;
+                    this.ctx.strokeStyle = `rgba(255, 215, 0, ${pulse})`;
+                    this.ctx.lineWidth = 4;
+                    this.ctx.beginPath();
+                    this.ctx.roundRect(cutlet.x - 5, cutlet.y - 5, cutlet.width + 10, cutlet.height + 10, 12);
+                    this.ctx.stroke();
+
+                    // Inner glow
+                    this.ctx.strokeStyle = `rgba(255, 255, 255, ${pulse * 0.5})`;
+                    this.ctx.lineWidth = 2;
+                    this.ctx.stroke();
+                }
+
+                // Draw flip indicator
+                if (cutlet.secondSide) {
+                    this.ctx.fillStyle = '#fff';
+                    this.ctx.font = 'bold 12px Arial';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillText('2', cutlet.x + cutlet.width / 2, cutlet.y - 5);
+                }
+            }
+        }
+
+        private gameLoop(currentTime: number): void {
+            if (!this.gameRunning) return;
+
+            const deltaTime = currentTime - this.lastTime;
+            this.lastTime = currentTime;
+
+            this.update(deltaTime);
+            this.draw();
+
+            this.animationFrame = requestAnimationFrame((time) => this.gameLoop(time));
+        }
+
+        private updateUI(): void {
+            const scoreEl = document.getElementById('score');
+            const comboEl = document.getElementById('combo');
+            const comboDisplay = document.getElementById('combo-display');
+            const streakEl = document.getElementById('streak');
+            const levelEl = document.getElementById('level');
+
+            if (scoreEl) scoreEl.textContent = Math.floor(this.score).toString();
+            if (comboEl) comboEl.textContent = `x${this.combo}`;
+            if (streakEl) streakEl.textContent = this.streak.toString();
+            if (levelEl) levelEl.textContent = this.level.toString();
+
+            if (comboDisplay) {
+                if (this.combo > 0) {
+                    comboDisplay.classList.add('active');
+                } else {
+                    comboDisplay.classList.remove('active');
+                }
+            }
+        }
+
+        private startTimer(): void {
+            this.timerInterval = window.setInterval(() => {
+                this.timeLeft--;
+                const timerEl = document.getElementById('timer');
+                if (timerEl) timerEl.textContent = this.timeLeft.toString();
+
+                if (this.timeLeft <= 0) {
+                    this.endGame();
+                }
+            }, 1000);
+        }
+
+        public startGame(): void {
+            this.score = 0;
+            this.combo = 0;
+            this.bestCombo = 0;
+            this.streak = 0;
+            this.perfectFlips = 0;
+            this.level = 1;
+            this.cutletsFlippedInLevel = 0;
+            this.cutletsNeededForNextLevel = 10;
+            this.levelStartScore = 0;
+            this.canProgressToNextLevel = false;
+            this.timeLeft = 60;
+            this.cutlets = [];
+            this.particles = [];
+            this.spawnInterval = 2000;
+            this.lastSpawnTime = Date.now();
+            this.gameRunning = true;
+
+            const overlay = document.getElementById('gameOverlay');
+            if (overlay) overlay.classList.add('hidden');
+
+            this.updateUI();
+            this.startTimer();
+            this.lastTime = performance.now();
+            this.gameLoop(this.lastTime);
+        }
+
+        private endGame(): void {
+            this.gameRunning = false;
+            clearInterval(this.timerInterval);
+            cancelAnimationFrame(this.animationFrame);
+
+            if (this.score > this.highScore) {
+                this.highScore = this.score;
+                this.saveHighScore();
+            }
+
+            const highScoreEl = document.getElementById('highScore');
+            if (highScoreEl) highScoreEl.textContent = Math.floor(this.highScore).toString();
+
+            // Check if player completed the level requirement
+            if (this.canProgressToNextLevel) {
+                this.showLevelComplete();
+            } else {
+                this.showGameOver();
+            }
+        }
+
+        public continueToNextLevel(): void {
+            // If canProgressToNextLevel is true, advance to next level
+            // Otherwise, retry the same level
+            if (this.canProgressToNextLevel) {
+                this.level++;
+                this.levelStartScore = this.score;
+                this.cutletsNeededForNextLevel = 10 + (this.level - 1) * 2;
+                this.showLevelUpNotification();
+            }
+
+            this.cutletsFlippedInLevel = 0;
+            this.canProgressToNextLevel = false;
+
+            // Reset time
+            this.timeLeft = 60;
+            this.cutlets = [];
+            this.particles = [];
+            this.combo = 0;
+            this.streak = 0;
+            this.spawnInterval = 2000;
+            this.lastSpawnTime = Date.now();
+            this.gameRunning = true;
+
+            const overlay = document.getElementById('gameOverlay');
+            if (overlay) overlay.classList.add('hidden');
+
+            this.updateUI();
+            this.startTimer();
+            this.lastTime = performance.now();
+            this.gameLoop(this.lastTime);
+        }
+
+        private showStartScreen(): void {
+            const overlay = document.getElementById('gameOverlay');
+            const title = document.getElementById('overlayTitle');
+            const message = document.getElementById('overlayMessage');
+            const button = document.getElementById('startButton');
+            const nextButton = document.getElementById('nextLevelButton');
+            const stats = document.getElementById('finalStats');
+            const levelStats = document.getElementById('levelCompleteStats');
+
+            if (overlay) overlay.classList.remove('hidden');
+            if (title) title.textContent = 'High Steaks';
+            if (message) message.textContent = 'Vänd kotletterna i perfekt tid!';
+            if (button) {
+                button.textContent = 'Börja spela';
+                button.classList.remove('hidden');
+            }
+            if (nextButton) nextButton.classList.add('hidden');
+            if (stats) stats.classList.add('hidden');
+            if (levelStats) levelStats.classList.add('hidden');
+        }
+
+        private showLevelComplete(): void {
+            const overlay = document.getElementById('gameOverlay');
+            const title = document.getElementById('overlayTitle');
+            const message = document.getElementById('overlayMessage');
+            const button = document.getElementById('startButton');
+            const nextButton = document.getElementById('nextLevelButton');
+            const stats = document.getElementById('finalStats');
+            const levelStats = document.getElementById('levelCompleteStats');
+            const completedLevel = document.getElementById('completedLevel');
+            const levelScore = document.getElementById('levelScore');
+            const totalScore = document.getElementById('totalScore');
+
+            if (overlay) overlay.classList.remove('hidden');
+            if (title) title.textContent = 'Nivå klar!';
+            if (message) message.textContent = `Du klarade nivå ${this.level}! Fortsätt till nästa nivå för ökad svårighet!`;
+            if (button) button.classList.add('hidden');
+            if (nextButton) {
+                nextButton.classList.remove('hidden');
+                nextButton.textContent = `Fortsätt till nivå ${this.level + 1}`;
+            }
+            if (stats) stats.classList.add('hidden');
+            if (levelStats) levelStats.classList.remove('hidden');
+            if (completedLevel) completedLevel.textContent = this.level.toString();
+            if (levelScore) levelScore.textContent = Math.floor(this.score - this.levelStartScore).toString();
+            if (totalScore) totalScore.textContent = Math.floor(this.score).toString();
+        }
+
+        private showGameOver(): void {
+            const overlay = document.getElementById('gameOverlay');
+            const title = document.getElementById('overlayTitle');
+            const message = document.getElementById('overlayMessage');
+            const button = document.getElementById('startButton');
+            const nextButton = document.getElementById('nextLevelButton');
+            const stats = document.getElementById('finalStats');
+            const levelStats = document.getElementById('levelCompleteStats');
+            const finalScore = document.getElementById('finalScore');
+            const bestCombo = document.getElementById('bestCombo');
+            const perfectFlips = document.getElementById('perfectFlips');
+            const cutletsCompleted = document.getElementById('cutletsCompleted');
+
+            if (overlay) overlay.classList.remove('hidden');
+            if (title) title.textContent = 'Tid slut!';
+            if (message) {
+                message.textContent = `${this.getEndMessage()} Du klarade ${this.cutletsFlippedInLevel}/${this.cutletsNeededForNextLevel} kotletter!`;
+            }
+            if (button) {
+                button.textContent = 'Starta om';
+                button.classList.remove('hidden');
+            }
+
+            // Show next level button if they didn't complete enough cutlets but still want to try again
+            if (nextButton) {
+                nextButton.classList.remove('hidden');
+                nextButton.textContent = 'Försök igen';
+            }
+
+            if (stats) stats.classList.remove('hidden');
+            if (levelStats) levelStats.classList.add('hidden');
+            if (finalScore) finalScore.textContent = Math.floor(this.score).toString();
+            if (bestCombo) bestCombo.textContent = `x${this.bestCombo}`;
+            if (perfectFlips) perfectFlips.textContent = this.perfectFlips.toString();
+            if (cutletsCompleted) cutletsCompleted.textContent = `${this.cutletsFlippedInLevel}/${this.cutletsNeededForNextLevel}`;
+        }
+
+        private getEndMessage(): string {
+            if (this.score >= 5000) {
+                return '🏆 Fantastiskt! Du är en grillmästare!';
+            } else if (this.score >= 3000) {
+                return '🥇 Utmärkt grillning!';
+            } else if (this.score >= 2000) {
+                return '🥈 Bra jobbat på grillen!';
+            } else if (this.score >= 1000) {
+                return '🥉 Hyfsat, fortsätt träna!';
+            } else {
+                return '📚 Fortsätt träna - timing är allt!';
+            }
+        }
+
+        private saveHighScore(): void {
+            try {
+                localStorage.setItem('highSteaksHighScore', this.highScore.toString());
+            } catch (e) {
+                // localStorage not available
+            }
+        }
+
+        private loadHighScore(): void {
+            try {
+                const saved = localStorage.getItem('highSteaksHighScore');
+                if (saved) {
+                    this.highScore = parseInt(saved, 10);
+                    const highScoreEl = document.getElementById('highScore');
+                    if (highScoreEl) highScoreEl.textContent = Math.floor(this.highScore).toString();
+                }
+            } catch (e) {
+                // localStorage not available
+            }
+        }
+    }
+
+    // Initialize game when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
+        if (canvas) {
+            new HighSteaksGame(canvas);
+        }
+    });
+</script>
+
+<style>
+    .container {
+        max-width: 1000px;
+    }
+
+    .subtitle {
+        text-align: center;
+        font-size: 1.3rem;
+        margin-bottom: 3rem;
+        color: #5d3a1a;
+        border-bottom: 2px solid #8b5a2b;
+        padding-bottom: 1.5rem;
+    }
+
+    .game-wrapper {
+        background: rgba(139, 90, 43, 0.08);
+        padding: 2rem;
+        border: 3px solid #8b5a2b;
+        border-radius: 8px;
+    }
+
+    .game-ui {
+        margin-bottom: 1.5rem;
+    }
+
+    .ui-top {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .ui-item {
+        background: rgba(139, 46, 11, 0.1);
+        padding: 1rem;
+        border-radius: 6px;
+        border: 2px solid #8b5a2b;
+        text-align: center;
+    }
+
+    .ui-label {
+        display: block;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1rem;
+        color: #8b2e0b;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
+    }
+
+    .ui-value {
+        display: block;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2rem;
+        color: #8b5a2b;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .combo-display {
+        position: relative;
+        transition: all 0.3s;
+    }
+
+    .combo-display.active {
+        background: rgba(255, 215, 0, 0.2);
+        border-color: #ffd700;
+        transform: scale(1.05);
+    }
+
+    .combo-value {
+        color: #8b5a2b;
+    }
+
+    .combo-display.active .combo-value {
+        color: #d4a000;
+    }
+
+    .game-container {
+        position: relative;
+        background: #2a2a2a;
+        border: 4px solid #8b5a2b;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    #gameCanvas {
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .game-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+    }
+
+    .game-overlay.hidden {
+        display: none;
+    }
+
+    .overlay-content {
+        text-align: center;
+        color: #f5f1e8;
+        padding: 2rem;
+    }
+
+    .overlay-content h2 {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 3rem;
+        color: #ffd700;
+        margin-bottom: 1rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .overlay-content p {
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+        color: #f5f1e8;
+    }
+
+    .final-stats {
+        background: rgba(139, 90, 43, 0.2);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        border: 2px solid #8b5a2b;
+    }
+
+    .final-stats.hidden {
+        display: none;
+    }
+
+    .level-complete-stats {
+        background: rgba(255, 215, 0, 0.2);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        border: 2px solid #ffd700;
+    }
+
+    .level-complete-stats.hidden {
+        display: none;
+    }
+
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+    }
+
+    .stat-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .stat-label {
+        color: #d4a574;
+        font-weight: 600;
+    }
+
+    .stat-value {
+        color: #ffd700;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .game-button {
+        padding: 1rem 3rem;
+        background: #8b2e0b;
+        color: #f5f1e8;
+        border: 3px solid #5d1f08;
+        border-radius: 6px;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .game-button:hover {
+        background: #a83b14;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .game-button:active {
+        transform: translateY(0);
+    }
+
+    .secondary-button {
+        background: #d4a000;
+        border-color: #a67c00;
+        margin-top: 1rem;
+    }
+
+    .secondary-button:hover {
+        background: #ffd700;
+    }
+
+    .secondary-button.hidden {
+        display: none;
+    }
+
+    .game-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .info-item {
+        background: #fffef9;
+        padding: 0.75rem 1rem;
+        border: 2px solid #8b5a2b;
+        border-radius: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .info-label {
+        color: #5d3a1a;
+        font-weight: 600;
+    }
+
+    .info-value {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.5rem;
+        color: #8b2e0b;
+        font-weight: 700;
+    }
+
+    .instructions {
+        background: #fffef9;
+        padding: 1.5rem;
+        border: 2px dashed #8b5a2b;
+        border-radius: 6px;
+    }
+
+    .instructions h3 {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.5rem;
+        color: #8b2e0b;
+        margin-bottom: 1rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .instructions ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .instructions li {
+        margin-bottom: 0.75rem;
+        color: #5d3a1a;
+        line-height: 1.6;
+    }
+
+    .instructions li:last-child {
+        margin-bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+        .game-wrapper {
+            padding: 1rem;
+        }
+
+        .ui-top {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        .ui-item {
+            padding: 0.75rem;
+        }
+
+        .ui-label {
+            font-size: 0.9rem;
+        }
+
+        .ui-value {
+            font-size: 1.5rem;
+        }
+
+        .game-info {
+            grid-template-columns: 1fr;
+        }
+
+        .overlay-content h2 {
+            font-size: 2rem;
+        }
+
+        .overlay-content p {
+            font-size: 1.1rem;
+        }
+
+        .game-button {
+            font-size: 1.2rem;
+            padding: 0.9rem 2rem;
+        }
+
+        .instructions {
+            padding: 1rem;
+        }
+
+        .instructions h3 {
+            font-size: 1.3rem;
+        }
+
+        .instructions li {
+            font-size: 0.95rem;
+        }
+    }
+</style>
