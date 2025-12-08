@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-
+export const prerender = true;
 export async function getStaticPaths() {
     const recipeEntries = await getCollection('recipes');
     return recipeEntries.map((entry: any) => ({
