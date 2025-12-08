@@ -17,11 +17,14 @@ const recipes = recipeEntries.map((entry: any, index: number) => ({
 }));
 ---
 
-<Layout title="Kotlettrecept - Kotlett.se">
+<Layout
+    title="Kotlettrecept - Sveriges Bästa Samling av Recept på Kotlett | Kotlett.se"
+    description="Upptäck Sveriges största samling kotlettrecept! Från klassisk fläskkotlett till grillad lammkotlett. Hitta enkla och snabba recept på kotlett för alla tillfällen. Steg-för-steg instruktioner för perfekt resultat."
+>
     <div class="recipe-page">
         <div class="recipe-page-header">
             <h1>Kotlettrecept</h1>
-            <p class="subtitle">Från fläsk till fisk - alla kotlettrecept på ett ställe</p>
+            <p class="subtitle">Välkommen till Sveriges mest kompletta samling av kotlettrecept! Här hittar du allt från klassiska kotlettrecept till moderna tolkningar. Oavsett om du söker recept på fläskkotlett, lammkotlett eller viltkotlett - vi har kotlettrecept för alla smaker och tillfällen. Från snabba vardagsrecept till festliga kotlettrecept perfekta för middag.</p>
             <button class="submit-recipe-btn" id="submitRecipeBtn">
                 Skicka in recept
             </button>
@@ -51,6 +54,8 @@ const recipes = recipeEntries.map((entry: any, index: number) => ({
                         <button class="filter-btn" data-filter="notkotlett">🥩 Nötkotlett</button>
                         <button class="filter-btn" data-filter="viltkotlett">🐗 Viltkotlett</button>
                         <button class="filter-btn" data-filter="fiskkotlett">🐟 Fiskkotlett</button>
+                        <button class="filter-btn" data-filter="kalkonkotlett">🦃 Kalkonkotlett</button>
+                        <button class="filter-btn" data-filter="ankkotlett">🦆 Ankkotlett</button>
                     </div>
                 </div>
 

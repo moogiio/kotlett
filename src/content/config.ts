@@ -4,8 +4,8 @@ const recipes = defineCollection({
   type: 'content',
   schema: z.object({
     name: z.string(),
-    category: z.enum(['flaskkotlett', 'lammkotlett', 'kalvkotlett', 'notkotlett', 'viltkotlett', 'fiskkotlett']),
-    difficulty: z.enum(['enkel', 'medel', 'svar']),
+    category: z.enum(['flaskkotlett', 'kycklingkotlett', 'lammkotlett', 'kalvkotlett', 'notkotlett', 'viltkotlett', 'fiskkotlett', 'kalkonkotlett', 'ankkotlett']),
+    difficulty: z.enum(['enkel', 'medel', 'svår']),
     time: z.enum(['snabb', 'medel', 'lang']),
     cookTime: z.string(),
     servings: z.number(),

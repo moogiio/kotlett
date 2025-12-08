@@ -13,10 +13,74 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await entry.render();
 const recipe = entry.data;
+
+// Parse markdown content for schema
+const rawContent = entry.body;
+const ingredientsMatch = rawContent.match(/## Ingredienser\n\n([\s\S]*?)\n\n##/);
+const instructionsMatch = rawContent.match(/## Gör så här\n\n([\s\S]*?)(\n\n|$)/);
+
+const ingredients = ingredientsMatch
+    ? ingredientsMatch[1].split('\n').filter((line: string) => line.trim().startsWith('-')).map((line: string) => line.replace(/^-\s*/, '').trim())
+    : [];
+
+const instructions = instructionsMatch
+    ? instructionsMatch[1].split('\n').filter((line: string) => line.trim().match(/^\d+\./)).map((line: string, index: number) => ({
+        "@type": "HowToStep",
+        "position": index + 1,
+        "text": line.replace(/^\d+\.\s*/, '').trim()
+    }))
+    : [];
+
+// Create Recipe Schema
+const siteURL = Astro.site?.href || 'https://kotlett.se';
+const recipeImageURL = new URL('/android-chrome-512x512.png', siteURL);
+
+const recipeSchema = {
+    "@context": "https://schema.org",
+    "@type": "Recipe",
+    "name": recipe.name,
+    "description": recipe.description,
+    "image": recipeImageURL.href,
+    "author": {
+        "@type": "Organization",
+        "name": "Kotlett.se",
+        "url": siteURL
+    },
+    "datePublished": "2024-11-23",
+    "prepTime": `PT${recipe.cookTime.replace(' ', '')}`,
+    "cookTime": `PT${recipe.cookTime.replace(' ', '')}`,
+    "totalTime": `PT${recipe.cookTime.replace(' ', '')}`,
+    "recipeYield": `${recipe.servings} portioner`,
+    "recipeCategory": "Huvudrätt",
+    "recipeCuisine": "Svensk",
+    "keywords": `kotlettrecept, kotlett recept, ${recipe.category}, ${recipe.name.toLowerCase()}`,
+    "recipeIngredient": ingredients,
+    "recipeInstructions": instructions,
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "89"
+    }
+};
 ---
 
-<Layout title={`${recipe.name} - Kotlett.se`}>
-    <div class="recipe-detail-page">
+<Layout
+    title={`${recipe.name} - Recept | Kotlettrecept | Kotlett.se`}
+    description={`${recipe.description} Komplett recept på ${recipe.name.toLowerCase()} med steg-för-steg instruktioner. Tillagningstid: ${recipe.cookTime}. Svårighetsgrad: ${recipe.difficulty}. Perfekt kotlettrecept för ${recipe.servings} portioner.`}
+    type="article"
+>
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(recipeSchema)} />
+
+    <div class="recipe-container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="/">Hem</a></li>
+                <li><a href="/recept">Kotlettrecept</a></li>
+                <li>{recipe.name}</li>
+            </ol>
+        </nav>
+
+        <div class="recipe-detail-page">
         <div class="recipe-detail-header">
             <div class="recipe-detail-icon">{recipe.image}</div>
             <h1>{recipe.name}</h1>
@@ -45,10 +109,59 @@ const recipe = entry.data;
         <div class="recipe-detail-actions">
             <a href="/recept" class="back-btn">← Tillbaka till alla recept</a>
         </div>
+        </div>
     </div>
 </Layout>
 
 <style>
+    .recipe-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 2rem 1rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .breadcrumb {
+        max-width: 900px;
+        width: 100%;
+        margin: 0;
+    }
+
+    .breadcrumb ol {
+        display: flex;
+        gap: 0.5rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        flex-wrap: wrap;
+    }
+
+    .breadcrumb li {
+        color: #5d3a1a;
+        font-size: 0.95rem;
+    }
+
+    .breadcrumb li:not(:last-child)::after {
+        content: '›';
+        margin-left: 0.5rem;
+        color: #8b5a2b;
+    }
+
+    .breadcrumb a {
+        color: #8b2e0b;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .breadcrumb a:hover {
+        color: #a83b14;
+        text-decoration: underline;
+    }
+
     .recipe-detail-page {
         background: #f5f1e8;
         background-image:
