@@ -6,7 +6,7 @@ time: "snabb"
 cookTime: "25 min"
 servings: 4
 description: "Klassisk tysk fläskkotlett - den vanligaste varianten av schnitzel."
-image: "🇩🇪"
+image: "🍺"
 ---
 
 ## Ingredienser

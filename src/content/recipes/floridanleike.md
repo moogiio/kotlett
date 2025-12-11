@@ -6,7 +6,7 @@ time: "medel"
 cookTime: "35 min"
 servings: 4
 description: "Finsk fläskkotlett med stekt persika och bearnaise."
-image: "🇫🇮"
+image: "🍑"
 ---
 
 ## Ingredienser

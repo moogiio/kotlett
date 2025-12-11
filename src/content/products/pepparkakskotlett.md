@@ -2,17 +2,20 @@
 name: Pepparkakskotlett
 price: 69
 inventory: 0
-image: /images/products/Pepparkakskotlett.jpg
+images:
+  - /images/products/pepparkakskotlett_form.jpg
+  - /images/products/pepparkakskotlett_done.jpg
 description: Ta chansen och få hem det bästa som hänt sen skivat bröd
 category: flaskkotlett
 ---
 
 Älskar du både kotletter och pepparkakor? Nu behöver du inte välja! Med vår exklusiva pepparkaksform i kotlettform kan du baka de godaste pepparkakorna i perfekt kotlettform.
+**OBS!** Ej ätbar - endast formen. Pepparkakorna däremot, de är jättegoda!
 
 ## Produktdetaljer
-- Material: Högkvalitativ livsmedelsplastik
+- Material: Plast (PLA, ej livsmedelgodkänd) och tål ej maskindisk!
 - Storlek: Ca 10 cm
-- Färg: Klassisk röd
+- Färg: Olika beroende på vad som finns hemma
 - Detaljerat mönster med både ben och köttstycke
 - Perfekt för julfirande med kotlettentusiaster
 
@@ -26,4 +29,8 @@ Gör årets julbak till något alldeles extra! Överraska dina gäster med peppa
 4. Grädda enligt recept
 5. Njut av Sveriges mest unika pepparkakor!
 
-**OBS!** Ej ätbar - endast formen. Pepparkakorna däremot, de är jättegoda!
+## Hur beställer jag?
+Kontaka mig på peter@clampland.se med en leveransadress och antal. När swish är mottagen läggs din form på posten!
+
+
+

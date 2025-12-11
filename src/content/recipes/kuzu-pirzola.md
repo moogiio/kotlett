@@ -6,7 +6,7 @@ time: "snabb"
 cookTime: "20 min"
 servings: 4
 description: "Turkiska kryddade lammkotletter."
-image: "🇹🇷"
+image: "🌙"
 ---
 
 ## Ingredienser

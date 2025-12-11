@@ -6,7 +6,7 @@ time: "snabb"
 cookTime: "25 min"
 servings: 4
 description: "Argentinsk panerad nötfilé med vitlök och persilja."
-image: "🇦🇷"
+image: "🥩"
 ---
 
 ## Ingredienser

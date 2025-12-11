@@ -6,7 +6,7 @@ time: "snabb"
 cookTime: "25 min"
 servings: 4
 description: "Svensk klassiker med krämig dragonsås."
-image: "🇸🇪"
+image: "🌿"
 ---
 
 ## Ingredienser

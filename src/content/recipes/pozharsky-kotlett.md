@@ -6,7 +6,7 @@ time: "medel"
 cookTime: "35 min"
 servings: 4
 description: "Rysk kycklingkotlett med smör i färsen - extra saftig."
-image: "🇷🇺"
+image: "🧈"
 ---
 
 ## Ingredienser

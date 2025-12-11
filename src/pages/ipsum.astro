@@ -35,10 +35,9 @@ const initialText = generateKotlettIpsumWithOptions({ paragraphs: 3, sentences: 
             <h2>API för kotlettutvecklare</h2>
             <p>Du kan använda vårt API för att generera kotlett ipsum programmatiskt:</p>
 
-            <div class="api-url-wrapper">
-                <code class="api-url">/api/ipsum?paragraphs=3&sentences=5&format=json</code>
-                <button class="api-copy-btn" id="apiCopyBtn" title="Kopiera API URL">📋</button>
-            </div>
+            <code class="api-url" id="apiUrl">https://kotlett.se/api/ipsum?paragraphs=3&sentences=5&format=json</code>
+
+            <button class="copy-btn api-copy-button" id="apiCopyBtn">Kopiera API URL</button>
 
             <div class="api-params">
                 <h3>Parametrar:</h3>
@@ -216,14 +215,19 @@ const initialText = generateKotlettIpsumWithOptions({ paragraphs: 3, sentences: 
         const apiCopyBtn = document.getElementById('apiCopyBtn');
         if (apiCopyBtn) {
             apiCopyBtn.addEventListener('click', async () => {
-                const apiUrl = '/api/ipsum?paragraphs=3&sentences=5&format=json';
+                const apiUrlEl = document.getElementById('apiUrl') as HTMLElement | null;
+                if (!apiUrlEl) return;
+
+                const apiUrl = apiUrlEl.textContent || '';
 
                 try {
                     await navigator.clipboard.writeText(apiUrl);
-                    apiCopyBtn.textContent = '✓';
+                    apiCopyBtn.textContent = '✓ Kopierat!';
+                    apiCopyBtn.classList.add('copied');
 
                     setTimeout(() => {
-                        apiCopyBtn.textContent = '📋';
+                        apiCopyBtn.textContent = 'Kopiera API URL';
+                        apiCopyBtn.classList.remove('copied');
                     }, 2000);
                 } catch (err) {
                     console.error('Failed to copy:', err);

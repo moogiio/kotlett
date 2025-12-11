@@ -6,7 +6,7 @@ time: "snabb"
 cookTime: "25 min"
 servings: 4
 description: "Italiensk panerad kyckling med parmesan."
-image: "🇮🇹"
+image: "🍝"
 ---
 
 ## Ingredienser

@@ -6,7 +6,7 @@ time: "medel"
 cookTime: "35 min"
 servings: 4
 description: "Asturisk fylld nötfilé med skinka och ost."
-image: "🇪🇸"
+image: "🥘"
 ---
 
 ## Ingredienser

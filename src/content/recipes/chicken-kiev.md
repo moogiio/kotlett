@@ -6,7 +6,7 @@ time: "lang"
 cookTime: "45 min"
 servings: 4
 description: "Fylld kycklingkotlett med vitlökssmör - en östeuropeisk klassiker."
-image: "🇺🇦"
+image: "🧄"
 ---
 
 ## Ingredienser

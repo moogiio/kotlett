@@ -6,7 +6,7 @@ time: "medel"
 cookTime: "30 min"
 servings: 4
 description: "Österrikes nationalrätt - tunn kalvkotlett panerad och stekt i smör."
-image: "🇦🇹"
+image: "🎻"
 ---
 
 ## Ingredienser

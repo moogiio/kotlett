@@ -6,7 +6,7 @@ time: "medel"
 cookTime: "30 min"
 servings: 4
 description: "Japansk friterad fläskkotlett med krispig panko och tonkatsusås."
-image: "🇯🇵"
+image: "🍱"
 ---
 
 ## Ingredienser

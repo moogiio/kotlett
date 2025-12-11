@@ -16,6 +16,12 @@
         "image": {
           "type": "string"
         },
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "description": {
           "type": "string"
         },
@@ -38,7 +44,6 @@
         "name",
         "price",
         "inventory",
-        "image",
         "description",
         "category"
       ],

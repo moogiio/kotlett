@@ -6,7 +6,7 @@ time: "snabb"
 cookTime: "25 min"
 servings: 4
 description: "Klassiska grekiska kotletter med oregano och citron."
-image: "🇬🇷"
+image: "🫒"
 ---
 
 ## Ingredienser

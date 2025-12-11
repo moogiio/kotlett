@@ -6,7 +6,7 @@ time: "lang"
 cookTime: "30 min + marinering"
 servings: 4
 description: "Polsk klassiker - fläskkotlett marinerad i mjölk och lök."
-image: "🇵🇱"
+image: "🥟"
 ---
 
 ## Ingredienser

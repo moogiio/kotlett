@@ -43,6 +43,18 @@ const structuredData = {
 
             <div class="feature-grid">
                 <div class="feature-card">
+                    <h3 class="feature-title">Kotlettbutik</h3>
+                    <p class="feature-description">
+                        Handla de finaste kotletterna direkt hem till dörren! Vårt sortiment omfattar
+                        allt från klassiska fläskkotletter till exklusiva specialiteter.
+                    </p>
+                    <p class="feature-joke">
+                        💡 <em>"Kvalitet som smakar - från gård till grill!"</em>
+                    </p>
+                    <a href="/butik" class="feature-button">Handla kotletter</a>
+                </div>
+
+                <div class="feature-card">
                     <h3 class="feature-title">Kotlett Ipsum</h3>
                     <p class="feature-description">
                         Trött på Lorem Ipsum? Prova vår <strong>Kotlett Ipsum</strong>-generator istället!
@@ -90,7 +102,19 @@ const structuredData = {
                     </p>
                     <a href="/poesi" class="feature-button">Kotlettkultur</a>
                 </div>
-                
+
+                <div class="feature-card">
+                    <h3 class="feature-title">High Steaks</h3>
+                    <p class="feature-description">
+                        Testa dina reflexer i vårt spännande kotlettspel! Fånga fallande kotletter och undvik
+                        de farliga grönsakerna. Hur många kotletter kan du rädda?
+                    </p>
+                    <p class="feature-joke">
+                        💡 <em>"Insatserna är höga - High Steaks!"</em>
+                    </p>
+                    <a href="/spel" class="feature-button">Spela nu</a>
+                </div>
+
             </div>
         </section>
 
@@ -121,6 +145,10 @@ const structuredData = {
 </Layout>
 
 <style>
+    .container {
+        max-width: 1400px;
+    }
+
     .hero {
         text-align: center;
         padding: 2rem 0;
@@ -183,6 +211,18 @@ const structuredData = {
         grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr));
         gap: 2rem;
         margin-bottom: 3rem;
+    }
+
+    @media (min-width: 1200px) {
+        .feature-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 1199px) {
+        .feature-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 
     .feature-card {
