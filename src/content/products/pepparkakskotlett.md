@@ -1,7 +1,7 @@
 ---
 name: Pepparkakskotlett
 price: 69
-inventory: 0
+inventory: 10
 images:
   - /images/products/pepparkakskotlett_form.jpg
   - /images/products/pepparkakskotlett_done.jpg
