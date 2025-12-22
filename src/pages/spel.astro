@@ -94,6 +94,51 @@ import Layout from '../layouts/Layout.astro';
                 </ul>
             </div>
         </div>
+
+        <div style="margin-top: 4rem;">
+            <h1>Meat Matcher</h1>
+        <p class="subtitle">Swipa dig fram till din perfekta kotlett!</p>
+            <div class="game-wrapper-matcher">
+                <div class="card-container" id="cardContainer">
+                    <!-- Cards will be inserted here -->
+                </div>
+
+                <div class="start-screen" id="startScreenMatcher">
+                    <div class="start-content">
+                        <h2>Välkommen till Meat Matcher!</h2>
+                        <p>Svara på 10 frågor genom att swipa höger (JA) eller vänster (NEJ)</p>
+                        <p>Vi kommer att matcha dig med din perfekta kotlett!</p>
+                        <button class="start-button" id="startButtonMatcher">Börja matcha</button>
+                    </div>
+                </div>
+
+                <div class="result-screen hidden" id="resultScreenMatcher">
+                    <div class="result-content">
+                        <h2>Din perfekta match!</h2>
+                        <div class="cutlet-result" id="cutletResult">
+                            <!-- Result will be inserted here -->
+                        </div>
+                        <button class="restart-button" id="restartButtonMatcher">Matcha igen</button>
+                    </div>
+                </div>
+
+                <div class="progress-bar-matcher" id="progressBarMatcher">
+                    <div class="progress-fill" id="progressFillMatcher"></div>
+                    <span class="progress-text" id="progressTextMatcher">0/10</span>
+                </div>
+
+                <div class="swipe-buttons" id="swipeButtonsMatcher">
+                    <button class="swipe-btn swipe-left" id="swipeLeftBtnMatcher">
+                        <span class="btn-icon">✕</span>
+                        <span class="btn-text">NEJ</span>
+                    </button>
+                    <button class="swipe-btn swipe-right" id="swipeRightBtnMatcher">
+                        <span class="btn-icon">♥</span>
+                        <span class="btn-text">JA</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </Layout>
 
@@ -887,6 +932,585 @@ import Layout from '../layouts/Layout.astro';
             new HighSteaksGame(canvas);
         }
     });
+
+    // Meat Matcher Game
+    interface Question {
+        id: number;
+        text: string;
+        emoji: string;
+        yesPoints: Record<string, number>;
+        noPoints: Record<string, number>;
+    }
+
+    interface CutletResult {
+        name: string;
+        description: string;
+        emoji: string;
+        characteristics: string[];
+        recipe?: string;
+    }
+
+    const allQuestions: Question[] = [
+        {
+            id: 1,
+            text: "Gillar du smaker från Medelhavet?",
+            emoji: "🌊",
+            yesPoints: { greek: 3, mediterranean: 3, french: 2 },
+            noPoints: { classic: 2, asian: 2 }
+        },
+        {
+            id: 2,
+            text: "Föredrar du krispiga, panerade kotletter?",
+            emoji: "✨",
+            yesPoints: { schnitzel: 3, italian: 2, crispy: 3 },
+            noPoints: { grilled: 2, smoked: 2 }
+        },
+        {
+            id: 3,
+            text: "Är du sugen på något exotiskt och asiatiskt?",
+            emoji: "🥢",
+            yesPoints: { asian: 3, teriyaki: 3 },
+            noPoints: { classic: 2, mediterranean: 1 }
+        },
+        {
+            id: 4,
+            text: "Älskar du stark, kryddig mat?",
+            emoji: "🌶️",
+            yesPoints: { spicy: 3, asian: 2, mexican: 2 },
+            noPoints: { classic: 2, french: 2 }
+        },
+        {
+            id: 5,
+            text: "Föredrar du enklare, klassiska smaker?",
+            emoji: "👨‍🍳",
+            yesPoints: { classic: 3, grilled: 2 },
+            noPoints: { teriyaki: 2, mexican: 1 }
+        },
+        {
+            id: 6,
+            text: "Gillar du citrus och fräscha smaker?",
+            emoji: "🍋",
+            yesPoints: { mediterranean: 2, greek: 3, mexican: 2 },
+            noPoints: { smoked: 2, classic: 1 }
+        },
+        {
+            id: 7,
+            text: "Är ost ett måste i din mat?",
+            emoji: "🧀",
+            yesPoints: { italian: 3, french: 3, schnitzel: 2 },
+            noPoints: { asian: 2, greek: 1 }
+        },
+        {
+            id: 8,
+            text: "Föredrar du marinerade kotletter framför panerade?",
+            emoji: "🍖",
+            yesPoints: { grilled: 3, greek: 2, teriyaki: 3 },
+            noPoints: { schnitzel: 2, italian: 2 }
+        },
+        {
+            id: 9,
+            text: "Gillar du rostade, karamelliserade smaker?",
+            emoji: "🔥",
+            yesPoints: { grilled: 3, teriyaki: 2, smoked: 2 },
+            noPoints: { schnitzel: 1 }
+        },
+        {
+            id: 10,
+            text: "Föredrar du traditionella recept framför moderna?",
+            emoji: "📖",
+            yesPoints: { classic: 3, french: 2, schnitzel: 2 },
+            noPoints: { mexican: 2, spicy: 2 }
+        },
+        {
+            id: 11,
+            text: "Tycker du rökig smak gör maten bättre?",
+            emoji: "💨",
+            yesPoints: { smoked: 3, grilled: 2 },
+            noPoints: { french: 2, italian: 1 }
+        },
+        {
+            id: 12,
+            text: "Gillar du söta och salta kombinationer?",
+            emoji: "🍯",
+            yesPoints: { teriyaki: 3, asian: 2, honeygarlic: 3 },
+            noPoints: { classic: 2, mediterranean: 1 }
+        },
+        {
+            id: 13,
+            text: "Föredrar du mat med mycket vitlök?",
+            emoji: "🧄",
+            yesPoints: { greek: 3, mediterranean: 2, honeygarlic: 2 },
+            noPoints: { classic: 2, teriyaki: 1 }
+        },
+        {
+            id: 14,
+            text: "Är du sugen på något med taco-vibes?",
+            emoji: "🌮",
+            yesPoints: { mexican: 3, spicy: 2 },
+            noPoints: { french: 2, italian: 2 }
+        },
+        {
+            id: 15,
+            text: "Gillar du mat med rika, krämiga såser?",
+            emoji: "🥛",
+            yesPoints: { french: 3, classic: 2 },
+            noPoints: { grilled: 2, asian: 1 }
+        },
+        {
+            id: 16,
+            text: "Föredrar du kött som smälter i munnen?",
+            emoji: "💫",
+            yesPoints: { smoked: 3, french: 2, grilled: 2 },
+            noPoints: { schnitzel: 1 }
+        },
+        {
+            id: 17,
+            text: "Är du sugen på något med honung?",
+            emoji: "🍯",
+            yesPoints: { honeygarlic: 3, teriyaki: 2 },
+            noPoints: { spicy: 2, schnitzel: 1 }
+        },
+        {
+            id: 18,
+            text: "Tycker du örter gör maten bättre?",
+            emoji: "🌿",
+            yesPoints: { mediterranean: 3, greek: 2, french: 2 },
+            noPoints: { asian: 1, mexican: 1 }
+        },
+        {
+            id: 19,
+            text: "Föredrar du mat med koriander och lime?",
+            emoji: "🌿",
+            yesPoints: { mexican: 3, spicy: 2, asian: 1 },
+            noPoints: { classic: 2, french: 2 }
+        },
+        {
+            id: 20,
+            text: "Gillar du umami-rika smaker?",
+            emoji: "🍄",
+            yesPoints: { teriyaki: 3, asian: 3, smoked: 2 },
+            noPoints: { classic: 1, mediterranean: 1 }
+        }
+    ];
+
+    let questions: Question[] = [];
+
+    const cutletResults: Record<string, CutletResult> = {
+        greek: {
+            name: "Grekiska Lammkotletter",
+            description: "Med citron, vitlök och oregano - en medelhavsdröm!",
+            emoji: "🇬🇷",
+            characteristics: [
+                "Marinerad i olivolja och citron",
+                "Kryddad med oregano och vitlök",
+                "Serveras med tzatziki",
+                "Perfekt för sommargrillen"
+            ],
+            recipe: "/recept/grekiska-lammkotletter"
+        },
+        italian: {
+            name: "Veal Parmigiana",
+            description: "Krispiga, ostiga och helt oemotståndliga!",
+            emoji: "🇮🇹",
+            characteristics: [
+                "Panerade med parmesan",
+                "Krispigt skal med saftigt kött",
+                "Perfekt med pasta eller sallad",
+                "Smak av Italien"
+            ],
+            recipe: "/recept/veal-parmigiana"
+        },
+        schnitzel: {
+            name: "Wiener Schnitzel",
+            description: "Den klassiska österrikiska favoriten!",
+            emoji: "🥇",
+            characteristics: [
+                "Tunnklappad och panerad",
+                "Gyllene och krispy",
+                "Serveras med citronsklyftor",
+                "Traditionell och älskad"
+            ],
+            recipe: "/recept/wiener-schnitzel"
+        },
+        classic: {
+            name: "Klassisk Stekt Fläskkotlett",
+            description: "Enkelt, gott och tidlöst!",
+            emoji: "🇸🇪",
+            characteristics: [
+                "Salt, peppar och smör",
+                "Stekta till perfektion",
+                "Serveras med gräddsås",
+                "Svenskt husmanskost"
+            ],
+            recipe: "/recept/klassisk-stekt-flaskkotlett"
+        },
+        asian: {
+            name: "Tonkatsu",
+            description: "Japansk friterad fläskkotlett med krispig panko!",
+            emoji: "🥢",
+            characteristics: [
+                "Panerad med panko",
+                "Friterad till perfektion",
+                "Serveras med tonkatsusås",
+                "Japansk favorit"
+            ],
+            recipe: "/recept/tonkatsu"
+        },
+        spicy: {
+            name: "Mexikanska Kotletter",
+            description: "För dig som gillar det hett och smakrikt!",
+            emoji: "🌶️",
+            characteristics: [
+                "Marinerad med chili och lime",
+                "Stark och fräsch samtidigt",
+                "Perfekt balans av hetta",
+                "Moderna smaker"
+            ],
+            recipe: "/recept/milanesa-argentina"
+        },
+        grilled: {
+            name: "Grillad Lammkotlett med Vitlök",
+            description: "Rostade till perfektion med rökig smak!",
+            emoji: "🔥",
+            characteristics: [
+                "Grillad över öppen eld",
+                "Rökig och karamelliserad yta",
+                "Perfekt till sommaren",
+                "Klassisk grillmat"
+            ],
+            recipe: "/recept/grillad-lammkotlett-med-vitlok"
+        },
+        mediterranean: {
+            name: "Lammkotlett med Rosmarin",
+            description: "Solkyssta smaker från Medelhavet!",
+            emoji: "☀️",
+            characteristics: [
+                "Olivolja, timjan och rosmarin",
+                "Lätta och fräscha smaker",
+                "Serveras med grönsaker",
+                "Hälsosamt och gott"
+            ],
+            recipe: "/recept/lammkotlett-med-rosmarin"
+        },
+        teriyaki: {
+            name: "Tonkatsu",
+            description: "Söt, salt och umami - japansk perfektion!",
+            emoji: "🍱",
+            characteristics: [
+                "Glaserad med teriyakisås",
+                "Söt och salt balans",
+                "Serveras med sesamfrön",
+                "Asiatisk favorit"
+            ],
+            recipe: "/recept/tonkatsu"
+        },
+        mexican: {
+            name: "Milanesa Argentina",
+            description: "Kryddig, fräsch och full av liv!",
+            emoji: "🌮",
+            characteristics: [
+                "Kryddad med cumin och koriander",
+                "Serveras med lime och salsa",
+                "Perfekt i tacos",
+                "Festlig och smakrik"
+            ],
+            recipe: "/recept/milanesa-argentina"
+        },
+        french: {
+            name: "Fläskkotlett med Dragon",
+            description: "Elegant med senap, grädde och dragon - ooh la la!",
+            emoji: "🇫🇷",
+            characteristics: [
+                "Tillagad med dijonsenap",
+                "Krämig dragonsås",
+                "Raffinerad smak",
+                "Klassisk fransk mat"
+            ],
+            recipe: "/recept/flaskkotlett-med-dragon"
+        },
+        smoked: {
+            name: "Italienska Långkokta Kotletter",
+            description: "Långsamt kokta för maximal smörighet!",
+            emoji: "💨",
+            characteristics: [
+                "Kokta i flera timmar",
+                "Smälter i munnen",
+                "Djup rik smak",
+                "Italiensk tradition"
+            ],
+            recipe: "/recept/italienska-langkokta-kotletter"
+        },
+        honeygarlic: {
+            name: "Fläskkotlett med Äpple",
+            description: "Perfekt balans mellan sött och smakrikt!",
+            emoji: "🍯",
+            characteristics: [
+                "Serveras med stekta äpplen",
+                "Söt och salt kombination",
+                "Karamelliserad yta",
+                "Familjefavorit"
+            ],
+            recipe: "/recept/flaskkotlett-med-apple"
+        }
+    };
+
+    class MeatMatchGame {
+        private currentQuestion: number = 0;
+        private answers: boolean[] = [];
+        private scores: Record<string, number> = {};
+        private startX: number = 0;
+        private currentX: number = 0;
+        private isDragging: boolean = false;
+        private currentCard: HTMLElement | null = null;
+
+        constructor() {
+            this.initializeScores();
+            this.bindEvents();
+            this.showStartScreen();
+        }
+
+        private initializeScores(): void {
+            Object.keys(cutletResults).forEach(key => {
+                this.scores[key] = 0;
+            });
+        }
+
+        private bindEvents(): void {
+            const startButton = document.getElementById('startButtonMatcher');
+            const restartButton = document.getElementById('restartButtonMatcher');
+            const swipeLeftBtn = document.getElementById('swipeLeftBtnMatcher');
+            const swipeRightBtn = document.getElementById('swipeRightBtnMatcher');
+
+            if (startButton) {
+                startButton.addEventListener('click', () => this.startGame());
+            }
+
+            if (restartButton) {
+                restartButton.addEventListener('click', () => this.restartGame());
+            }
+
+            if (swipeLeftBtn) {
+                swipeLeftBtn.addEventListener('click', () => this.handleSwipe(false));
+            }
+
+            if (swipeRightBtn) {
+                swipeRightBtn.addEventListener('click', () => this.handleSwipe(true));
+            }
+        }
+
+        private showStartScreen(): void {
+            const startScreen = document.getElementById('startScreenMatcher');
+            const progressBar = document.getElementById('progressBarMatcher');
+            const swipeButtons = document.getElementById('swipeButtonsMatcher');
+
+            if (startScreen) startScreen.classList.remove('hidden');
+            if (progressBar) progressBar.classList.add('hidden');
+            if (swipeButtons) swipeButtons.classList.add('hidden');
+        }
+
+        private selectRandomQuestions(): void {
+            const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
+            questions = shuffled.slice(0, 10);
+        }
+
+        private startGame(): void {
+            const startScreen = document.getElementById('startScreenMatcher');
+            const progressBar = document.getElementById('progressBarMatcher');
+            const swipeButtons = document.getElementById('swipeButtonsMatcher');
+
+            if (startScreen) startScreen.classList.add('hidden');
+            if (progressBar) progressBar.classList.remove('hidden');
+            if (swipeButtons) swipeButtons.classList.remove('hidden');
+
+            this.currentQuestion = 0;
+            this.answers = [];
+            this.initializeScores();
+            this.selectRandomQuestions();
+            this.showQuestion();
+        }
+
+        private showQuestion(): void {
+            const container = document.getElementById('cardContainer');
+            if (!container) return;
+
+            const question = questions[this.currentQuestion];
+
+            const card = document.createElement('div');
+            card.className = 'card-matcher';
+            card.innerHTML = `
+                <div class="card-emoji">${question.emoji}</div>
+                <div class="card-question">${question.text}</div>
+                <div class="card-number">Fråga ${this.currentQuestion + 1} av ${questions.length}</div>
+            `;
+
+            card.addEventListener('mousedown', (e) => this.onDragStart(e));
+            card.addEventListener('touchstart', (e) => this.onDragStart(e));
+            card.addEventListener('mousemove', (e) => this.onDragMove(e));
+            card.addEventListener('touchmove', (e) => this.onDragMove(e));
+            card.addEventListener('mouseup', (e) => this.onDragEnd(e));
+            card.addEventListener('touchend', (e) => this.onDragEnd(e));
+            card.addEventListener('mouseleave', (e) => this.onDragEnd(e));
+
+            container.innerHTML = '';
+            container.appendChild(card);
+            this.currentCard = card;
+
+            setTimeout(() => card.classList.add('visible'), 10);
+
+            this.updateProgress();
+        }
+
+        private onDragStart(e: MouseEvent | TouchEvent): void {
+            this.isDragging = true;
+            this.startX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+            if (this.currentCard) {
+                this.currentCard.style.transition = 'none';
+            }
+        }
+
+        private onDragMove(e: MouseEvent | TouchEvent): void {
+            if (!this.isDragging || !this.currentCard) return;
+
+            const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+            this.currentX = clientX - this.startX;
+
+            const rotation = this.currentX / 20;
+            const opacity = Math.max(0.5, 1 - Math.abs(this.currentX) / 300);
+
+            this.currentCard.style.transform = `translateX(${this.currentX}px) rotate(${rotation}deg)`;
+            this.currentCard.style.opacity = opacity.toString();
+
+            if (this.currentX > 50) {
+                this.currentCard.classList.add('swipe-right-hint');
+                this.currentCard.classList.remove('swipe-left-hint');
+            } else if (this.currentX < -50) {
+                this.currentCard.classList.add('swipe-left-hint');
+                this.currentCard.classList.remove('swipe-right-hint');
+            } else {
+                this.currentCard.classList.remove('swipe-right-hint', 'swipe-left-hint');
+            }
+        }
+
+        private onDragEnd(e: MouseEvent | TouchEvent): void {
+            if (!this.isDragging || !this.currentCard) return;
+
+            this.isDragging = false;
+
+            if (Math.abs(this.currentX) > 100) {
+                const isYes = this.currentX > 0;
+                this.animateSwipeOut(isYes);
+            } else {
+                this.currentCard.style.transition = 'all 0.3s ease';
+                this.currentCard.style.transform = 'translateX(0) rotate(0)';
+                this.currentCard.style.opacity = '1';
+                this.currentCard.classList.remove('swipe-right-hint', 'swipe-left-hint');
+            }
+
+            this.currentX = 0;
+        }
+
+        private animateSwipeOut(isYes: boolean): void {
+            if (!this.currentCard) return;
+
+            const direction = isYes ? 1 : -1;
+            this.currentCard.style.transition = 'all 0.3s ease';
+            this.currentCard.style.transform = `translateX(${direction * 500}px) rotate(${direction * 30}deg)`;
+            this.currentCard.style.opacity = '0';
+
+            setTimeout(() => {
+                this.handleSwipe(isYes);
+            }, 300);
+        }
+
+        private handleSwipe(answer: boolean): void {
+            const question = questions[this.currentQuestion];
+            this.answers.push(answer);
+
+            const points = answer ? question.yesPoints : question.noPoints;
+            Object.keys(points).forEach(key => {
+                if (this.scores[key] !== undefined) {
+                    this.scores[key] += points[key];
+                }
+            });
+
+            this.currentQuestion++;
+
+            if (this.currentQuestion < questions.length) {
+                setTimeout(() => this.showQuestion(), 300);
+            } else {
+                setTimeout(() => this.showResult(), 500);
+            }
+        }
+
+        private updateProgress(): void {
+            const progressFill = document.getElementById('progressFillMatcher');
+            const progressText = document.getElementById('progressTextMatcher');
+
+            const percentage = (this.currentQuestion / questions.length) * 100;
+
+            if (progressFill) {
+                progressFill.style.width = `${percentage}%`;
+            }
+
+            if (progressText) {
+                progressText.textContent = `${this.currentQuestion}/${questions.length}`;
+            }
+        }
+
+        private showResult(): void {
+            let maxScore = -1;
+            let winningCutlet = 'classic';
+
+            Object.keys(this.scores).forEach(key => {
+                if (this.scores[key] > maxScore) {
+                    maxScore = this.scores[key];
+                    winningCutlet = key;
+                }
+            });
+
+            const result = cutletResults[winningCutlet];
+
+            const resultScreen = document.getElementById('resultScreenMatcher');
+            const resultContent = document.getElementById('cutletResult');
+            const progressBar = document.getElementById('progressBarMatcher');
+            const swipeButtons = document.getElementById('swipeButtonsMatcher');
+            const cardContainer = document.getElementById('cardContainer');
+
+            if (progressBar) progressBar.classList.add('hidden');
+            if (swipeButtons) swipeButtons.classList.add('hidden');
+            if (cardContainer) cardContainer.innerHTML = '';
+
+            if (resultContent) {
+                resultContent.innerHTML = `
+                    <div class="result-emoji">${result.emoji}</div>
+                    <h3 class="result-name">${result.name}</h3>
+                    <p class="result-description">${result.description}</p>
+                    <div class="result-characteristics">
+                        <h4>Kännetecken:</h4>
+                        <div class="characteristics-grid">
+                            ${result.characteristics.map(char => `<div class="characteristic-item">${char}</div>`).join('')}
+                        </div>
+                        ${result.recipe ? `<div class="result-actions"><a href="${result.recipe}" class="recipe-btn">Se recept →</a></div>` : ''}
+                    </div>
+                `;
+            }
+
+            if (resultScreen) {
+                resultScreen.classList.remove('hidden');
+            }
+        }
+
+        private restartGame(): void {
+            const resultScreen = document.getElementById('resultScreenMatcher');
+            if (resultScreen) resultScreen.classList.add('hidden');
+
+            this.startGame();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        new MeatMatchGame();
+    });
 </script>
 
 <style>
@@ -1217,6 +1841,501 @@ import Layout from '../layouts/Layout.astro';
 
         .instructions li {
             font-size: 0.95rem;
+        }
+    }
+
+    /* Meat Matcher Styles */
+    .game-wrapper-matcher {
+        background: linear-gradient(135deg, rgba(255, 182, 193, 0.15), rgba(255, 218, 185, 0.15));
+        padding: 2rem;
+        border: 3px solid #8b5a2b;
+        border-radius: 16px;
+        min-height: 600px;
+        position: relative;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .card-container {
+        width: 100%;
+        height: 450px;
+        position: relative;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card-matcher {
+        position: absolute;
+        width: 100%;
+        max-width: 400px;
+        height: 400px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        padding: 3rem 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        cursor: grab;
+        user-select: none;
+        opacity: 0;
+        transform: scale(0.9);
+        transition: all 0.3s ease;
+    }
+
+    .card-matcher.visible {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .card-matcher:active {
+        cursor: grabbing;
+    }
+
+    .card-matcher .card-emoji {
+        font-size: 5rem;
+        margin-bottom: 2rem;
+    }
+
+    .card-matcher .card-question {
+        font-size: 1.8rem;
+        color: #5d3a1a;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        line-height: 1.4;
+    }
+
+    .card-matcher .card-number {
+        font-size: 1rem;
+        color: #999;
+        font-weight: 500;
+        margin-top: auto;
+    }
+
+    .card-matcher.swipe-right-hint::after {
+        content: "♥ JA";
+        position: absolute;
+        top: 50px;
+        right: 50px;
+        font-size: 3rem;
+        color: #4caf50;
+        font-weight: bold;
+        opacity: 0.7;
+        transform: rotate(20deg);
+    }
+
+    .card-matcher.swipe-left-hint::after {
+        content: "✕ NEJ";
+        position: absolute;
+        top: 50px;
+        left: 50px;
+        font-size: 3rem;
+        color: #f44336;
+        font-weight: bold;
+        opacity: 0.7;
+        transform: rotate(-20deg);
+    }
+
+    .progress-bar-matcher {
+        width: 100%;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+        border: 2px solid #8b5a2b;
+    }
+
+    .progress-bar-matcher.hidden {
+        display: none;
+    }
+
+    .progress-bar-matcher .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ff6b9d, #ffa06b);
+        border-radius: 20px;
+        width: 0;
+        transition: width 0.3s ease;
+    }
+
+    .progress-bar-matcher .progress-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.2rem;
+        color: #5d3a1a;
+        font-weight: 700;
+    }
+
+    .start-screen,
+    .result-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(255, 182, 193, 0.3), rgba(255, 218, 185, 0.3));
+        border-radius: 16px;
+        z-index: 10;
+    }
+
+    .start-screen.hidden,
+    .result-screen.hidden {
+        display: none;
+    }
+
+    .start-content,
+    .result-content {
+        text-align: center;
+        padding: 2rem;
+        max-width: 500px;
+    }
+
+    .start-content h2,
+    .result-content h2 {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2.5rem;
+        color: #8b2e0b;
+        margin-bottom: 1.5rem;
+        letter-spacing: 2px;
+    }
+
+    .start-content p {
+        font-size: 1.2rem;
+        color: #5d3a1a;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .start-button,
+    .restart-button {
+        margin-top: 2rem;
+        padding: 1rem 3rem;
+        background: linear-gradient(135deg, #ff6b9d, #ffa06b);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        box-shadow: 0 5px 20px rgba(255, 107, 157, 0.4);
+    }
+
+    .start-button:hover,
+    .restart-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255, 107, 157, 0.6);
+    }
+
+    .swipe-buttons {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .swipe-buttons.hidden {
+        display: none;
+    }
+
+    .swipe-btn {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        border: 3px solid;
+        background: white;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        font-family: 'Bebas Neue', sans-serif;
+    }
+
+    .swipe-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .swipe-btn:active {
+        transform: scale(0.95);
+    }
+
+    .swipe-left {
+        border-color: #f44336;
+        color: #f44336;
+    }
+
+    .swipe-left:hover {
+        background: #f44336;
+        color: white;
+    }
+
+    .swipe-right {
+        border-color: #4caf50;
+        color: #4caf50;
+    }
+
+    .swipe-right:hover {
+        background: #4caf50;
+        color: white;
+    }
+
+    .btn-icon {
+        font-size: 2rem;
+        line-height: 1;
+    }
+
+    .btn-text {
+        font-size: 0.8rem;
+        margin-top: 0.2rem;
+    }
+
+    .cutlet-result {
+        background: #f5f1e8;
+        padding: 0;
+        border: 6px solid #8b2e0b;
+        border-radius: 0;
+        box-shadow:
+            12px 12px 0 rgba(139, 46, 11, 0.3),
+            0 0 0 2px #5d3a1a;
+        position: relative;
+    }
+
+    .cutlet-result::before {
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: -3px;
+        right: -3px;
+        bottom: -3px;
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 10px,
+            rgba(139, 46, 11, 0.1) 10px,
+            rgba(139, 46, 11, 0.1) 20px
+        );
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    .result-emoji {
+        font-size: 8rem;
+        margin: 0;
+        padding: 2rem 0 1rem 0;
+        background: #8b2e0b;
+        border-bottom: 6px solid #5d1f08;
+        text-align: center;
+        line-height: 1;
+        filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.2));
+    }
+
+    .result-name {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2.5rem;
+        color: #f5f1e8;
+        background: #5d3a1a;
+        margin: 0;
+        padding: 1.5rem 2rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-align: center;
+        border-bottom: 4px solid #2a1810;
+        text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .result-description {
+        font-size: 1.3rem;
+        color: #5d3a1a;
+        margin: 0;
+        padding: 2rem;
+        line-height: 1.6;
+        background: rgba(139, 90, 43, 0.1);
+        border-bottom: 4px dashed #8b5a2b;
+        font-weight: 600;
+        text-align: center;
+        font-style: italic;
+    }
+
+    .result-characteristics {
+        text-align: left;
+        margin: 0;
+        padding: 2.5rem;
+        background: #fffef9;
+    }
+
+    .result-characteristics h4 {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.8rem;
+        color: #8b2e0b;
+        margin: 0 0 2rem 0;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        border-left: 6px solid #8b2e0b;
+        padding-left: 1rem;
+        background: rgba(139, 46, 11, 0.05);
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+
+    .characteristics-grid {
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 2rem;
+    }
+
+    .characteristic-item {
+        padding: 2rem 3rem;
+        padding-left: 5rem;
+        position: relative;
+        color: #2a1810;
+        line-height: 2.2;
+        background: white;
+        border: 3px solid #8b5a2b;
+        border-left: 6px solid #8b2e0b;
+        font-weight: 600;
+        font-size: 1.15rem;
+        box-shadow: 4px 4px 0 rgba(139, 90, 43, 0.2);
+        transition: all 0.2s;
+    }
+
+    .characteristic-item:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 rgba(139, 90, 43, 0.3);
+    }
+
+    .characteristic-item::before {
+        content: "🥩";
+        position: absolute;
+        left: 1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.8rem;
+    }
+
+    .result-actions {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 4px dashed #8b5a2b;
+        text-align: center;
+    }
+
+    .result-actions .recipe-btn {
+        width: 100%;
+        font-size: 1.5rem;
+        padding: 1.5rem 2rem;
+        box-shadow: 6px 6px 0 #5d1f08;
+    }
+
+    .result-actions .recipe-btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 8px 8px 0 #5d1f08;
+    }
+
+    .result-actions .recipe-btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 #5d1f08;
+    }
+
+    @media (max-width: 768px) {
+        .game-wrapper-matcher {
+            padding: 1rem;
+            min-height: 500px;
+        }
+
+        .card-matcher {
+            height: 350px;
+            padding: 2rem 1.5rem;
+        }
+
+        .card-container {
+            height: 400px;
+        }
+
+        .card-matcher .card-emoji {
+            font-size: 4rem;
+        }
+
+        .card-matcher .card-question {
+            font-size: 1.4rem;
+        }
+
+        .cutlet-result {
+            box-shadow:
+                8px 8px 0 rgba(139, 46, 11, 0.3),
+                0 0 0 2px #5d3a1a;
+        }
+
+        .result-emoji {
+            font-size: 6rem;
+            padding: 1.5rem 0 0.75rem 0;
+        }
+
+        .result-name {
+            font-size: 2rem;
+            padding: 1rem 1.5rem;
+            letter-spacing: 2px;
+        }
+
+        .result-description {
+            font-size: 1.1rem;
+            padding: 1.5rem;
+        }
+
+        .result-characteristics {
+            padding: 2rem 1.5rem;
+        }
+
+        .result-characteristics h4 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .characteristics-grid {
+            gap: 1.5rem;
+        }
+
+        .characteristic-item {
+            padding: 1.5rem 2rem;
+            padding-left: 4rem;
+            font-size: 1rem;
+            line-height: 2;
+            box-shadow: 3px 3px 0 rgba(139, 90, 43, 0.2);
+        }
+
+        .characteristic-item:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 4px 4px 0 rgba(139, 90, 43, 0.3);
+        }
+
+        .characteristic-item::before {
+            font-size: 1.5rem;
+            left: 1.2rem;
+        }
+
+        .result-actions .recipe-btn {
+            font-size: 1.3rem;
+            padding: 1.2rem 1.5rem;
+            box-shadow: 4px 4px 0 #5d1f08;
+        }
+
+        .result-actions .recipe-btn:hover {
+            box-shadow: 5px 5px 0 #5d1f08;
         }
     }
 </style>
