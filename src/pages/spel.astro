@@ -99,6 +99,7 @@ import Layout from '../layouts/Layout.astro';
             <h1>Meat Matcher</h1>
         <p class="subtitle">Swipa dig fram till din perfekta kotlett!</p>
             <div class="game-wrapper-matcher">
+                <div class="question-counter-matcher hidden" id="questionCounterMatcher">Fråga 1 av 10</div>
                 <div class="card-container" id="cardContainer">
                     <!-- Cards will be inserted here -->
                 </div>
@@ -1317,10 +1318,12 @@ import Layout from '../layouts/Layout.astro';
             const startScreen = document.getElementById('startScreenMatcher');
             const progressBar = document.getElementById('progressBarMatcher');
             const swipeButtons = document.getElementById('swipeButtonsMatcher');
+            const questionCounter = document.getElementById('questionCounterMatcher');
 
             if (startScreen) startScreen.classList.add('hidden');
             if (progressBar) progressBar.classList.remove('hidden');
             if (swipeButtons) swipeButtons.classList.remove('hidden');
+            if (questionCounter) questionCounter.classList.remove('hidden');
 
             this.currentQuestion = 0;
             this.answers = [];
@@ -1338,10 +1341,17 @@ import Layout from '../layouts/Layout.astro';
             const card = document.createElement('div');
             card.className = 'card-matcher';
             card.innerHTML = `
-                <div class="card-emoji">${question.emoji}</div>
-                <div class="card-question">${question.text}</div>
-                <div class="card-number">Fråga ${this.currentQuestion + 1} av ${questions.length}</div>
+                <div class="card-question-box">
+                    <div class="card-emoji">${question.emoji}</div>
+                    <div class="card-question">${question.text}</div>
+                </div>
             `;
+
+            // Update question counter
+            const questionCounter = document.getElementById('questionCounterMatcher');
+            if (questionCounter) {
+                questionCounter.textContent = `Fråga ${this.currentQuestion + 1} av ${questions.length}`;
+            }
 
             card.addEventListener('mousedown', (e) => this.onDragStart(e));
             card.addEventListener('touchstart', (e) => this.onDragStart(e));
@@ -1475,10 +1485,12 @@ import Layout from '../layouts/Layout.astro';
             const progressBar = document.getElementById('progressBarMatcher');
             const swipeButtons = document.getElementById('swipeButtonsMatcher');
             const cardContainer = document.getElementById('cardContainer');
+            const questionCounter = document.getElementById('questionCounterMatcher');
 
             if (progressBar) progressBar.classList.add('hidden');
             if (swipeButtons) swipeButtons.classList.add('hidden');
             if (cardContainer) cardContainer.innerHTML = '';
+            if (questionCounter) questionCounter.classList.add('hidden');
 
             if (resultContent) {
                 resultContent.innerHTML = `
@@ -1856,6 +1868,21 @@ import Layout from '../layouts/Layout.astro';
         margin: 0 auto;
     }
 
+    .question-counter-matcher {
+        text-align: center;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.5rem;
+        color: #5d3a1a;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .question-counter-matcher.hidden {
+        display: none;
+    }
+
     .card-container {
         width: 100%;
         height: 450px;
@@ -1869,12 +1896,12 @@ import Layout from '../layouts/Layout.astro';
     .card-matcher {
         position: absolute;
         width: 100%;
-        max-width: 400px;
-        height: 400px;
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-        padding: 3rem 2rem;
+        max-width: 500px;
+        height: 450px;
+        background: transparent;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -1896,24 +1923,32 @@ import Layout from '../layouts/Layout.astro';
         cursor: grabbing;
     }
 
+    .card-matcher .card-question-box {
+        width: 100%;
+        background: white;
+        border: 4px solid #8b5a2b;
+        border-radius: 24px;
+        padding: 3rem 2.5rem;
+        box-shadow: 0 8px 30px rgba(139, 90, 43, 0.4);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+    }
+
     .card-matcher .card-emoji {
-        font-size: 5rem;
-        margin-bottom: 2rem;
+        font-size: 10rem;
+        margin: 0;
+        line-height: 1;
     }
 
     .card-matcher .card-question {
-        font-size: 1.8rem;
+        font-size: 2.4rem;
         color: #5d3a1a;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
+        font-weight: 700;
         line-height: 1.4;
-    }
-
-    .card-matcher .card-number {
-        font-size: 1rem;
-        color: #999;
-        font-weight: 500;
-        margin-top: auto;
+        margin: 0;
     }
 
     .card-matcher.swipe-right-hint::after {
@@ -2258,21 +2293,31 @@ import Layout from '../layouts/Layout.astro';
             min-height: 500px;
         }
 
+        .question-counter-matcher {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
         .card-matcher {
-            height: 350px;
-            padding: 2rem 1.5rem;
+            height: 400px;
+            max-width: 380px;
         }
 
         .card-container {
-            height: 400px;
+            height: 450px;
+        }
+
+        .card-matcher .card-question-box {
+            padding: 2.5rem 2rem;
+            gap: 1.5rem;
         }
 
         .card-matcher .card-emoji {
-            font-size: 4rem;
+            font-size: 7rem;
         }
 
         .card-matcher .card-question {
-            font-size: 1.4rem;
+            font-size: 1.8rem;
         }
 
         .cutlet-result {
